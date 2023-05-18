@@ -21,6 +21,9 @@
   <ItemGroup>
     <ClCompile Include="client.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="easy_tcp_client.hpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
