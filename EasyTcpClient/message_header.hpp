@@ -1,35 +1,82 @@
-#include <string>
+#ifndef _MessageHeader_hpp_
+#define _MessageHeader_hpp_
 
-enum MessageType
+enum CMD
 {
-	LOGIN,
-	LOGINRESULT
+	CMD_LOGIN,
+	CMD_LOGIN_RESULT,
+	CMD_LOGOUT,
+	CMD_LOGOUT_RESULT,
+	CMD_NEW_USER_JOIN,
+	CMD_ERROR
 };
 
-struct MessageHeader {
-
-	MessageHeader(int data_length, MessageType type) : _data_length(data_length), _message_type(type) {}
-
-	int _data_length;
-	MessageType _message_type;
-};
-
-struct Login : public MessageHeader {
-
-	Login(const std::string& username, const std::string& password) : MessageHeader(sizeof(Login), MessageType::LOGIN) {
-		std::strcpy(_username, username.c_str());
-		std::strcpy(_password, password.c_str());
+struct DataHeader
+{
+	DataHeader()
+	{
+		dataLength = sizeof(DataHeader);
+		cmd = CMD_ERROR;
 	}
+	short dataLength;
+	short cmd;
+};
 
-	char _username[32];
-	char _password[32];
+//DataPackage
+struct Login : public DataHeader
+{
+	Login()
+	{
+		dataLength = sizeof(Login);
+		cmd = CMD_LOGIN;
+	}
+	char userName[32];
+	char PassWord[32];
 	char data[32];
 };
 
-struct LoginResult : public MessageHeader {
-
-	LoginResult(const std::string& login_result) : MessageHeader(sizeof(LoginResult), MessageType::LOGINRESULT) {
-		std::strcpy(_login_result, login_result.c_str());
+struct LoginResult : public DataHeader
+{
+	LoginResult()
+	{
+		dataLength = sizeof(LoginResult);
+		cmd = CMD_LOGIN_RESULT;
+		result = 0;
 	}
-	char _login_result[1024];
+	int result;
+	char data[92];
 };
+
+struct Logout : public DataHeader
+{
+	Logout()
+	{
+		dataLength = sizeof(Logout);
+		cmd = CMD_LOGOUT;
+	}
+	char userName[32];
+};
+
+struct LogoutResult : public DataHeader
+{
+	LogoutResult()
+	{
+		dataLength = sizeof(LogoutResult);
+		cmd = CMD_LOGOUT_RESULT;
+		result = 0;
+	}
+	int result;
+};
+
+struct NewUserJoin : public DataHeader
+{
+	NewUserJoin()
+	{
+		dataLength = sizeof(NewUserJoin);
+		cmd = CMD_NEW_USER_JOIN;
+		scok = 0;
+	}
+	int scok;
+};
+
+#endif // !_MessageHeader_hpp_

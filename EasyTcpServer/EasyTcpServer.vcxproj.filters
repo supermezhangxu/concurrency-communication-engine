@@ -32,5 +32,8 @@
     <ClInclude Include="cell_timestamp.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="cell_task.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

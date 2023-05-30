@@ -25,6 +25,7 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cell_task.hpp" />
     <ClInclude Include="cell_timestamp.hpp" />
     <ClInclude Include="easy_tcp_server.hpp" />
     <ClInclude Include="message_header.hpp" />
