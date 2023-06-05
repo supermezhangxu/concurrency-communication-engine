@@ -1,59 +1,64 @@
-﻿#include "easy_tcp_server.hpp"
+﻿#include "EasyTcpServer.hpp"
 #include<thread>
-
-bool g_bRun = true;
-void cmdThread()
-{//
-	while (true)
-	{
-		char cmdBuf[256] = {};
-		scanf("%s", cmdBuf);
-		if (0 == strcmp(cmdBuf, "exit"))
-		{
-			g_bRun = false;
-			printf("�˳�cmdThread�߳�\n");
-			break;
-		}
-		else {
-			printf("��֧�ֵ����\n");
-		}
-	}
-}
 
 class MyServer : public EasyTcpServer
 {
 public:
 
-	virtual void OnNetJoin(ClientSocket* pClient)
+	//cellServer 4 多个线程触发 不安全
+	//如果只开启1个cellServer就是安全的
+	virtual void OnNetJoin(CELLClient* pClient)
 	{
 		EasyTcpServer::OnNetJoin(pClient);
 	}
-
-	virtual void OnNetLeave(ClientSocket* pClient)
+	//cellServer 4 多个线程触发 不安全
+	//如果只开启1个cellServer就是安全的
+	virtual void OnNetLeave(CELLClient* pClient)
 	{
 		EasyTcpServer::OnNetLeave(pClient);
 	}
-
-	virtual void OnNetMsg(CellServer* pCellServer, ClientSocket* pClient, DataHeader* header)
+	//cellServer 4 多个线程触发 不安全
+	//如果只开启1个cellServer就是安全的
+	virtual void OnNetMsg(CELLServer* pServer, CELLClient* pClient, netmsg_DataHeader* header)
 	{
-		EasyTcpServer::OnNetMsg(pCellServer, pClient, header);
+		EasyTcpServer::OnNetMsg(pServer, pClient, header);
 		switch (header->cmd)
 		{
 		case CMD_LOGIN:
 		{
-			Login* login = (Login*)header;
-			LoginResult* ret = new LoginResult();
-			pCellServer->addSendTask(pClient, ret);
-		}
+			pClient->resetDTHeart();
+			//send recv 
+			netmsg_Login* login = (netmsg_Login*)header;
+			//CELLLog::Info("recv <Socket=%d> msgType：CMD_LOGIN, dataLen：%d,userName=%s PassWord=%s\n", cSock, login->dataLength, login->userName, login->PassWord);
+			//忽略判断用户密码是否正确的过程
+			netmsg_LoginR ret;
+			if(SOCKET_ERROR == pClient->SendData(&ret))
+			{
+				//发送缓冲区满了，消息没发出去
+				CELLLog::Info("<Socket=%d> Send Full\n", pClient->sockfd());
+			}
+			//netmsg_LoginR* ret = new netmsg_LoginR();
+			//pServer->addSendTask(pClient, ret);
+		}//接收 消息---处理 发送   生产者 数据缓冲区  消费者 
 		break;
 		case CMD_LOGOUT:
 		{
-			Logout* logout = (Logout*)header;
+			netmsg_Logout* logout = (netmsg_Logout*)header;
+			//CELLLog::Info("recv <Socket=%d> msgType：CMD_LOGOUT, dataLen：%d,userName=%s \n", cSock, logout->dataLength, logout->userName);
+			//忽略判断用户密码是否正确的过程
+			//netmsg_LogoutR ret;
+			//SendData(cSock, &ret);
 		}
 		break;
+		case CMD_C2S_HEART:
+		{
+			pClient->resetDTHeart();
+			netmsg_s2c_Heart ret;
+			pClient->SendData(&ret);
+		}
 		default:
 		{
-			printf("<socket=%d>�յ�δ������Ϣ,���ݳ��ȣ�%d\n", pClient->sockfd(), header->dataLength);
+			CELLLog::Info("recv <socket=%d> undefine msgType,dataLen：%d\n", pClient->sockfd(), header->dataLength);
 		}
 		break;
 		}
@@ -64,22 +69,32 @@ private:
 
 int main()
 {
-
+	CELLLog::Instance().setLogPath("serverLog.txt","w");
 	MyServer server;
 	server.InitSocket();
 	server.Bind(nullptr, 9527);
-	server.Listen(5);
+	server.Listen(64);
 	server.Start(4);
 
-	//����UI�߳�
-	std::thread t1(cmdThread);
-	t1.detach();
-
-	while (g_bRun)
+	//在主线程中等待用户输入命令
+	while (true)
 	{
-		server.OnRun();
+		char cmdBuf[256] = {};
+		scanf("%s", cmdBuf);
+		if (0 == strcmp(cmdBuf, "exit"))
+		{
+			server.Close();
+			break;
+		}
+		else {
+			CELLLog::Info("undefine cmd\n");
+		}
 	}
-	server.Close();
-	getchar();
+
+	CELLLog::Info("exit.\n");
+//#ifdef _WIN32
+//	while (true)
+//		Sleep(10);
+//#endif
 	return 0;
 }

@@ -1,9 +1,19 @@
-#ifndef _CELLTimestamp_hpp_
+ï»¿#ifndef _CELLTimestamp_hpp_
 #define _CELLTimestamp_hpp_
 
 //#include <windows.h>
 #include<chrono>
 using namespace std::chrono;
+
+class CELLTime
+{
+public:
+	//è·å–å½“å‰æ—¶é—´æˆ³ (æ¯«ç§’)
+	static time_t getNowInMilliSec()
+	{
+		return duration_cast<milliseconds>(high_resolution_clock::now().time_since_epoch()).count();
+	}
+};
 
 class CELLTimestamp
 {
@@ -12,7 +22,7 @@ public:
     {
         //QueryPerformanceFrequency(&_frequency);
         //QueryPerformanceCounter(&_startCount);
-        update();
+		update();
     }
     ~CELLTimestamp()
     {}
@@ -20,28 +30,28 @@ public:
     void    update()
     {
         //QueryPerformanceCounter(&_startCount);
-        _begin = high_resolution_clock::now();
+		_begin = high_resolution_clock::now();
     }
     /**
-    *   »ñÈ¡µ±Ç°Ãë
+    *   è·å–å½“å‰ç§’
     */
     double getElapsedSecond()
     {
         return  getElapsedTimeInMicroSec() * 0.000001;
     }
     /**
-    *   »ñÈ¡ºÁÃë
+    *   è·å–æ¯«ç§’
     */
     double getElapsedTimeInMilliSec()
     {
         return this->getElapsedTimeInMicroSec() * 0.001;
     }
     /**
-    *   »ñÈ¡Î¢Ãî
+    *   è·å–å¾®å¦™
     */
     long long getElapsedTimeInMicroSec()
     {
-        /*
+		/*
         LARGE_INTEGER endCount;
         QueryPerformanceCounter(&endCount);
 
@@ -49,14 +59,14 @@ public:
         double  endTimeInMicroSec   =   endCount.QuadPart * (1000000.0 / _frequency.QuadPart);
 
         return  endTimeInMicroSec - startTimeInMicroSec;
-        */
-
-        return duration_cast<microseconds>(high_resolution_clock::now() - _begin).count();
+		*/
+		
+		return duration_cast<microseconds>(high_resolution_clock::now() - _begin).count();
     }
 protected:
     //LARGE_INTEGER   _frequency;
     //LARGE_INTEGER   _startCount;
-    time_point<high_resolution_clock> _begin;
+	time_point<high_resolution_clock> _begin;
 };
 
 #endif // !_CELLTimestamp_hpp_

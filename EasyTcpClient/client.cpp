@@ -22,7 +22,7 @@ void cmdThread()
 }
 
 
-const int cCount = 10000;
+const int cCount = 1000;
 
 const int tCount = 4;
 

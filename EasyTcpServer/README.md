@@ -127,10 +127,10 @@ tcpÍøÂç´«ÊäÖÐ´«ÊäµÄÊÇÎÞ±ßÎÞ¼ÊµÄ×Ö½ÚÁ÷£¬ÎÞ·¨½«ÉÏ²ãÓ¦ÓÃ²ãÐ­ÒéµÄÊý¾Ý°ü·Ö¿ª£¬ÐèÒªÎÒÃ
 ### ½×¶ÎÐÔÐ¡Ä¿±ê 10000Á¬½ÓÃ¿Ãë´¦Àí300000¸öÊý¾Ý°ü
 
 ½«serverµÄ¼àÌýÁ¬½ÓºÍÎ¬³ÖÁ¬½Ó·Ö¿ª£¬ÔÚEasyTcpServerÖÐÎ¬³ÖÒ»¸öCellServer¼¯ºÏ£¬
-½«¾ßÌåµÄÊÕ·¢ÏûÏ¢½»¸øCellServer¡£EasyTcpServer¼àÌýÁ¬½Ó£¬Á¬½Ó½¨Á¢³É¹¦ºó£¬½«ClientSocket½»¸ø¾ßÌåµÄCellServer
+½«¾ßÌåµÄÊÕ·¢ÏûÏ¢½»¸øCellServer¡£EasyTcpServer¼àÌýÁ¬½Ó£¬Á¬½Ó½¨Á¢³É¹¦ºó£¬½«CellClient½»¸ø¾ßÌåµÄCellServer
 £¬ÕâÀï»áÌôÑ¡Ò»¸öÎ¬³Ö¿Í»§¶ËÊýÁ¿ÉÙµÄCellServer¡£
 
-#### ÈçºÎ½«ClientSocket½»¸øCellServer£¿
+#### ÈçºÎ½«CellClient½»¸øCellServer£¿
 
 Õâ¾ÍÊÇ¾­µäµÄÉú²úÕßÏû·ÑÕßÄ£Ê½£¬EasyTcpServerÊÇÉú²úÕß£¬CellServerÊÇÏû·ÑÕß£¬
 CellServerÖÐµÄ
@@ -140,9 +140,82 @@ CellServerÖÐµÄ
 ~~~
 ÊÇÏûÏ¢Á¬½ÓµÄÇÅÁº£¬EasyTcpServerÍùÀïÃæ·Å£¬CellServer´ÓÀïÃæÈ¡£¬ÖÐ¼äÐèÒª¼ÓËø±£³ÖÍ¬²½¡£
 
+### ÒýÈëÄÚ´æ¹ÜÀí£¬ÄÚ´æ³ØµÄÉè¼ÆÓëÊµÏÖ
 
+#### 1. Ê²Ã´ÊÇÄÚ´æ³Ø
+1.1 ³Ø»¯¼¼Êõ
 
+³ØÊÇÔÚ¼ÆËã¼¼ÊõÖÐ¾­³£Ê¹ÓÃµÄÒ»ÖÖÉè¼ÆÄ£Ê½£¬ÆäÄÚº­ÔÚÓÚ£º½«³ÌÐòÖÐÐèÒª¾­³£Ê¹ÓÃµÄºËÐÄ×ÊÔ´ÏÈÉêÇë³öÀ´£¬·Åµ½Ò»¸ö³ØÄÚ£¬ÓÐ³ÌÐò×Ô¹ÜÀí£¬ÕâÑù¿ÉÒÔÌá¸ß×ÊÔ´µÄÀûÓÃÂÊ£¬Ò²¿ÉÒÔ±£Ö¤±¾³ÌÐòÕ¼ÓÐµÄ×ÊÔ´ÊýÁ¿£¬¾­³£Ê¹ÓÃµÄ³Ø»¯¼¼Êõ°üÀ¨ÄÚ´æ³Ø£¬Ïß³Ì³Ø£¬ºÍÁ¬½Ó³ØµÈ£¬ÆäÖÐÓÈÒÔÄÚ´æ³ØºÍÏß³Ì³ØÊ¹ÓÃ×î¶à¡£
 
+1.2 ÄÚ´æ³Ø
 
+* ÄÚ´æ³Ø£¨Memory Pool£©ÊÇÒ»ÖÖ¶¯Ì¬ÄÚ´æ·ÖÅäÓë¹ÜÀí¼¼Êõ£¬Í¨³£Çé¿öÏÂ£¬³ÌÐòÔ±Ï°¹ßÖ±½ÓÊ¹ÓÃnew£¬delete£¬malloc,freeµÈAPIÉêÇëºÍÊÍ·ÅÄÚ´æ£¬ÕâÑùµ¼ÖÂµÄºó¹û¾ÍÊÇ£ºµ±³ÌÐòÔËÐÐµÄÊ±¼äºÜ³¤µÄÊ±ºò£¬ÓÉÓÚËùÉêÇëµÄÄÚ´æ¿éµÄ´óÐ¡²»¶¨£¬Æµ·±Ê¹ÓÃÊ±»áÔì³É´óÁ¿µÄÄÚ´æËéÆ¬´Ó¶ø½µµÍ³ÌÐòºÍ²Ù×÷ÏµÍ³µÄÐÔÄÜ¡£
+* ÄÚ´æ³ØÔòÊÇÔÚÕæÕýÊ¹ÓÃÄÚ´æÖ®Ç°£¬ÏÈÉêÇë·ÖÅäÒ»´ó¿éÄÚ´æ£¨ÄÚ´æ³Ø£©Áô×÷±¸ÓÃ¡£µ±³ÌÐòÔ±ÉêÇëÄÚ´æÊ±£¬´Ó³ØÖÐÈ¡³öÒ»¿é¶¯Ì¬·ÖÅä£¬µ±³ÌÐòÔ±ÊÍ·ÅÊ±£¬½«ÊÍ·ÅµÄÄÚ´æ·Å»Øµ½³ØÄÚ£¬ÔÙ´ÎÉêÇë£¬¾Í¿ÉÒÔ´Ó³ØÀïÈ¡³öÀ´Ê¹ÓÃ£¬²¢¾¡Á¿ÓëÖÜ±ßµÄ¿ÕÏÐÄÚ´æ¿éºÏ²¢¡£ÈôÄÚ´æ³Ø²»¹»Ê±£¬Ôò×Ô¶¯À©´óÄÚ´æ³Ø£¬´Ó²Ù×÷ÏµÍ³ÖÐÉêÇë¸ü´óµÄÄÚ´æ³Ø¡£
 
+#### 2. ÎªÊ²Ã´ÐèÒªÄÚ´æ³Ø
 
+ÄÚ´æËéÆ¬ÎÊÌâ
+
+Ôì³É¶ÑÀûÓÃÂÊºÜµÍµÄÒ»¸öÖ÷ÒªÔ­Òò¾ÍÊÇÄÚ´æËéÆ¬»¯¡£Èç¹ûÓÐÎ´Ê¹ÓÃµÄ´æ´¢Æ÷£¬µ«ÊÇÕâ¿é´æ´¢Æ÷²»ÄÜÓÃÀ´Âú×ã·ÖÅäµÄÇëÇó£¬ÕâÊ±ºò¾Í»á²úÉúÄÚ´æËéÆ¬»¯ÎÊÌâ¡£
+* ÄÚ²¿ËéÆ¬ÊÇÖ¸Ò»¸öÒÑ·ÖÅäµÄ¿é±ÈÓÐÐ§ÔØºÉ´óÊ±·¢ÉúµÄ¡£(¼ÙÉèÒÔÇ°·ÖÅäÁË10¸ö´óÐ¡µÄ×Ö½Ú£¬ÏÖÔÚÖ»ÓÃÁË5¸ö×Ö½Ú£¬ÔòÊ£ÏÂµÄ5¸ö×Ö½Ú¾Í»áÄÚËéÆ¬)¡£ÄÚ²¿ËéÆ¬µÄ´óÐ¡¾ÍÊÇÒÑ¾­·ÖÅäµÄ¿éµÄ´óÐ¡ºÍËûÃÇµÄÓÐÐ§ÔØºÉÖ®²îµÄºÍ¡£Òò´ËÄÚ²¿ËéÆ¬È¡¾öÓÚÒÔÇ°ÇëÇóÄÚ´æµÄÄ£Ê½ºÍ·ÖÅäÆ÷ÊµÏÖ(¶ÔÆëµÄ¹æÔò)µÄÄ£Ê½¡£
+* ¼ÙÉèÏµÍ³ÒÀ´Î·ÖÅäÁË16byte¡¢8byte¡¢16byte¡¢4byte£¬»¹Ê£Óà8byteÎ´·ÖÅä¡£ÕâÊ±Òª·ÖÅäÒ»¸ö24byteµÄ¿Õ¼ä£¬²Ù×÷ÏµÍ³»ØÊÕÁËÒ»¸öÉÏÃæµÄÁ½¸ö16byte£¬×ÜµÄÊ£Óà¿Õ¼äÓÐ40byte£¬µ«ÊÇÈ´²»ÄÜ·ÖÅä³öÒ»¸öÁ¬Ðø24byteµÄ¿Õ¼ä£¬Õâ¾ÍÊÇÍâËéÆ¬ÎÊÌâ¡£
+
+ÉêÇëÐ§ÂÊÎÊÌâ
+
+ÎªÊ²Ã´Æµ·±µÄÉêÇëºÍÊÍ·ÅÄÚ´æ»áÔì³ÉÏµÍ³ÐÔÄÜµÄÏÂ½µ£¿
+
+* Æµ·±µÄÉêÇëºÍÊÍ·ÅÄÚ´æ»áµ¼ÖÂ´óÁ¿µÄÄÚ´æËéÆ¬£¬Ê¹µÃÄÚ´æ·ÖÅäÐ§ÂÊ½µµÍ
+* Æµ·±µÄÉêÇëºÍÊÍ·ÅÄÚ´æ»áµ¼ÖÂ´óÁ¿µÄÈ±Ò³ÖÐ¶Ï£¬Ê¹µÃ½ø³ÌÏÝÈëÄÚºËÌ¬£¬ÏûºÄÏµÍ³×ÊÔ´
+* Æµ·±µÄÉêÇëºÍÊÍ·ÅÄÚ´æ»áµ¼ÖÂÄÚ´æ½ôËõ²Ù×÷£¬Ê¹µÃ½ø³ÌÐèÒªµ÷ÓÃbrk»òmmapµÈÏµÍ³µ÷ÓÃ£¬Ôö¼ÓÏµÍ³¿ªÏú
+
+¾ßÌåÀ´Ëµ£¬µ±ÎÒÃÇÊ¹ÓÃmalloc»ònewµÈAPIÉêÇë·ÖÅäÄÚ´æÊ±£¬Êµ¼ÊÉÏÊÇ·ÖÅäÁËÒ»¿éÐéÄâÄÚ´æ£¬Ã»ÓÐ·ÖÅäÎïÀíÄÚ´æ¡£µ±ÎÒÃÇµÚÒ»´Î·ÃÎÊÕâ¿éÐéÄâÄÚ´æÊ±£¬»á·¢ÉúÈ±Ò³ÖÐ¶Ï£¬²Ù×÷ÏµÍ³¸ºÔð·ÖÅäÎïÀíÄÚ´æ£¬²¢½¨Á¢ÐéÄâÄÚ´æºÍÎïÀíÄÚ´æÖ®¼äµÄÓ³Éä¹ØÏµ¡£Õâ¸ö¹ý³ÌÐèÒªÇÐ»»µ½ÄÚºËÌ¬£¬²¢Ö´ÐÐÒ»ÏµÁÐ²Ù×÷£¬±ÈÈç¼ì²éµØÖ·ºÏ·¨ÐÔ£¬²éÕÒ»ò·ÖÅäÎïÀíÒ³£¬Ìî³äÎïÀíÒ³ÄÚÈÝ£¬½¨Á¢Ó³Éä¹ØÏµµÈ¡£ÕâÐ©²Ù×÷¶¼»áÏûºÄÊ±¼äºÍ×ÊÔ´¡£Èç¹ûÎÒÃÇÆµ·±µØÉêÇëºÍÊÍ·Å²»Í¬´óÐ¡µÄÄÚ´æ¿é£¬¾Í»áÔì³É´óÁ¿µÄÈ±Ò³ÖÐ¶Ï£¬´Ó¶ø½µµÍÏµÍ³ÐÔÄÜ¡£
+
+ÀýÈç£¬ÔÚÒ»¸öÇëÇóÀ´Ê±£¬ÎÒÃÇÓÃmalloc·ÖÅäÁË2MµÄÄÚ´æ£¬ÇëÇó½áÊøºóÓÃfreeÊÍ·ÅÁËÕâ¿éÄÚ´æ¡£Èç¹ûÃ¿¸öÇëÇóÐèÒª6¸öÎïÀíÒ³£¬ÄÇÃ´Ã¿¸öÇëÇó¾Í»á²úÉú6¸öÈ±Ò³ÖÐ¶Ï£¬ÔÚ2000µÄÑ¹Á¦ÏÂ£¬Ã¿Ãë¾Í²úÉúÁË10000¶à´ÎÈ±Ò³ÖÐ¶Ï¡£ÕâÐ©È±Ò³ÖÐ¶Ï²»ÐèÒª¶ÁÈ¡´ÅÅÌ½â¾ö£¬ËùÒÔ½Ð×öminflt£¨minor fault£©¡£È±Ò³ÖÐ¶ÏÔÚÄÚºËÌ¬Ö´ÐÐ£¬Òò´Ë½ø³ÌµÄÄÚºËÌ¬cpuÏûºÄºÜ´ó¡£
+
+ÁíÍâ£¬µ±ÎÒÃÇÓÃfree»òdeleteµÈAPIÊÍ·ÅÄÚ´æÊ±£¬²¢²»Ò»¶¨»áÕæÕýµØÊÍ·ÅµôÐéÄâÄÚ´æºÍÎïÀíÄÚ´æ¡£ÕâÈ¡¾öÓÚÎÒÃÇÊ¹ÓÃµÄÊÇbrk»¹ÊÇmmapÀ´·ÖÅäÐéÄâÄÚ´æ¡£brkÊÇ½«Êý¾Ý¶Î(.data)µÄ×î¸ßµØÖ·Ö¸Õë_edataÍù¸ßµØÖ·ÍÆ£¬mmapÊÇÔÚ½ø³ÌµÄÐéÄâµØÖ·¿Õ¼äÖÐ£¨Ò»°ãÊÇ¶ÑºÍÕ»ÖÐ¼ä£©ÕÒÒ»¿é¿ÕÏÐµÄ¡£Èç¹ûÎÒÃÇÊ¹ÓÃbrk·ÖÅäÐéÄâÄÚ´æ£¬ÄÇÃ´Ö»ÓÐµ±¸ßµØÖ·¿Õ¼äµÄ¿ÕÏÐÄÚ´æ³¬¹ýÒ»¶¨ãÐÖµÊ±£¨Ä¬ÈÏÊÇ128K£©£¬²Å»áÖ´ÐÐÄÚ´æ½ôËõ²Ù×÷£¨trim£©£¬½«_edataÖ¸ÕëÍù»ØÍÆ£¬²¢ÊÍ·Åµô¶ÔÓ¦µÄÎïÀíÒ³¡£Èç¹ûÎÒÃÇÊ¹ÓÃmmap·ÖÅäÐéÄâÄÚ´æ£¬ÄÇÃ´ÊÍ·ÅÊ±»áµ÷ÓÃmunmapÀ´½â³ýÓ³Éä¹ØÏµ£¬²¢ÊÍ·Åµô¶ÔÓ¦µÄÎïÀíÒ³¡£Èç¹ûÎÒÃÇÆµ·±µØÉêÇëºÍÊÍ·Å´óÓÚ128KµÄÄÚ´æ¿é£¨Ä¬ÈÏÇé¿öÏÂmalloc»áµ÷ÓÃmmapÀ´·ÖÅä´óÓÚ128KµÄÄÚ´æ£©£¬¾Í»áÔì³ÉÆµ·±µØµ÷ÓÃmmapºÍmunmapÏµÍ³µ÷ÓÃ£¬Ôö¼ÓÏµÍ³¿ªÏú¡£
+
+×ÛÉÏËùÊö£¬Æµ·±µØÉêÇëºÍÊÍ·ÅÄÚ´æ»áÔì³ÉÏµÍ³ÐÔÄÜµÄÏÂ½µ£¬ÒòÎªËüÉæ¼°µ½ÐéÄâµØÖ·¿Õ¼äµÄ¹ÜÀí¡¢ÎïÀíÄÚ´æµÄ·ÖÅäºÍÊÍ·Å¡¢ÄÚºËÌ¬ºÍÓÃ»§Ì¬µÄÇÐ»»¡¢ÄÚ´æËéÆ¬µÄ²úÉúµÈÎÊÌâ¡£ÎªÁËÌá¸ßÐÔÄÜ£¬ÎÒÃÇ¿ÉÒÔ²ÉÓÃÒ»Ð©²ßÂÔ£¬±ÈÈçÊ¹ÓÃÄÚ´æ³ØÀ´Ô¤·ÖÅäºÍÖØÓÃ¹Ì¶¨´óÐ¡µÄÄÚ´æ¿é£¬»òÕßµ÷Õûmalloc²ÎÊýÀ´½ûÖ¹µ÷ÓÃmmapºÍÄÚ´æ½ôËõµÈ¡£
+#### 3.ÄÚ´æ³ØÉè¼Æ
+
+ÄÚ´æ³ØµÄÉè¼ÆÔ­Ôò£º¸ßÐ§ ¼òµ¥ Õë¶ÔÐÔÇ¿ Ê¹ÓÃ¼òµ¥
+
+¸ÃÏîÄ¿ÖÐÄÚ´æ³ØµÄ¾ßÌåÊµÏÖ£º
+
+![Memory Pool2](memory_pool2.png)
+
+![Memory Pool](memory_pool.png)
+
+Ê×ÏÈÖØÔØnewÔËËã·û£¬Í¨¹ýÖØÐÂ¶¨ÒånewºÍdeleteÀ´Ìæ»»µôÏµÍ³Ô­±¾µÄnewºÍdelete¡£
+
+ÁíÍâÕë¶ÔÄÚ´æ³Ø¸ßÐ§µÄÌØµã£¬ÔÚÄÚ´æÉêÇëÊ±ÐèÒª¼òµ¥¸ßÐ§µÄÓ³Éä£¬ÕâÀïµÄÓ³Éä·½Ê½ºÜ¼òµ¥£¬¾ÍÊÇÍ¨¹ý¶¨ÒåÒ»¸ö
+MemoryAllocÀàÐÍµÄÖ¸ÕëÊý×é£¬³¤¶ÈÎª¸ÃÄÚ´æ³Ø×î´óµÄÄÚ´æ¿éµÄ³¤¶È¼ÓÒ»£¬ÕâÑùÔÚÉêÇëÄÚ´æÊ±£¬¸ù¾ÝÉêÇësizeµÄ´óÐ¡Ö±½ÓÕÒµ½Êý×é¶ÔÓ¦µÄÔªËØµÄÄÚ´æ¿éÉêÇë¼´¿É¡£
+
+ÄÚ´æ³Ø·ÖÎª²»Í¬×Ö½ÚµÄ³Ø£¬¸ù¾ÝÏµÍ³ÐèÒªÀ´¶¨Òå²»Í¬µÄ×Ö½Ú³Ø£¬ÀýÈç64×Ö½Ú³Ø£¬128×Ö½Ú³ØµÈµÈ¡£
+Ã¿ÖÖ×Ö½Ú³ØµÄ½á¹¹´óÖÂÏàÍ¬£¬¶¼ÊÇÓÉÏàÍ¬µÄÍ·²¿¼ÓÉÏÖ¸¶¨µÄ×Ö½Ú³¤¶È×é³É£¬½«Æä³ÉÎªÄÚ´æ¿é£¬Í·²¿³ÆÎª¿éÍ·¡£
+¿éÍ·ÊÇÃèÊö¸ÃÄÚ´æ¿éµÄÐÅÏ¢½á¹¹Ìå£¬ÄÚ´æ¿éµÄÉêÇëºÍÊÍ·Å¶¼ÊÇÓÉÐÞ¸Ä¿éÍ·µÄÐÅÏ¢À´Íê³ÉµÄ¡£¿éÓë¿éÖ®¼äÍ¨¹ý¿éÍ·À´¹¹³ÉÁ´±í¡£
+MemoryAllocÄÚ²¿Î¬»¤Ò»¸ö¿ÉÓÃµÄ¿éÍ·²¿head£¬ÉêÇëºÍÊÍ·Å¶¼ÐèÒªÐÞ¸Ähead£¬ÒÔ´ËÀ´Î¬»¤ÄÚ´æ³ØµÄ×´Ì¬¡£
+
+Èç¹ûÉêÇëµÄÄÚ´æsize³¬¹ýÁËÄÚ´æ³ØÖ§³ÖµÄ×î´óÄÚ´æ¿é£¬ÔòÈÔÐèÒªµ÷ÓÃmallocºÍfreeÀ´Íê³É¶ÔÓ¦µÄÄÚ´æµÄÉêÇëºÍÊÍ·Å¡£
+
+#### 4.¶ÔÏó³ØµÄÉè¼Æ
+
+¸ÃÏîÄ¿ÖÐ¶ÔÏó³ØµÄÉè¼Æ£º
+
+![Object Pool](object_pool.png)
+
+ºËÐÄË¼ÏëÓëÄÚ´æ³ØÀàËÆ£¬µ«ÊÇÓÐ¼¸´¦²»Í¬£º
+* Ê×ÏÈÐèÒª¶¨ÒåÒ»¸öObjectPoolBaseÀà£¬Õâ¸öÀàÖØÔØÁËnewºÍdelete·½·¨£¬ÕâÀïµÄnewºÍdelete¶¼ÊÇÊ¹ÓÃObjectPool¶ÔÏó³ØÀ´Íê³ÉµÄ
+³ÌÐòÖÐÓÐÄÄ¸öÐèÒªÊ¹ÓÃ¶ÔÏó³ØµÄÀàÖ»ÐèÒª¼Ì³Ð¸ÃÀà¼´¿É£¬¼Ì³Ð¸ÃÀàÖ®ºó£¬¶ÔÏó´´½¨¾Í»á´Ó¶ÔÏó³ØÖÐÈ¡£¬µ«ÊÇ×¢ÒâÖÇÄÜÖ¸Õëshared_ptr»áÓÐµã²»Í¬£¬
+ÔÚÊ¹ÓÃÖÇÄÜÖ¸ÕëÊ±²»ÄÜÊ¹ÓÃmake_sharedµÈ±ê×¼¿âº¯Êý£¬Ê¹ÓÃÉÏÊöº¯ÊýÖØÔØµÄnew»áÊ§Ð§¡£
+* ÕâÀïµÄObjectPoolÊÇ·ºÐÍÀà£¬ÐèÒªÖ¸¶¨Á½¸ö²ÎÊý£¬¾ßÌåµÄ¶ÔÏóÀàÐÍÒÔ¼°¶ÔÏó³ØµÄ´óÐ¡¡£Í¨¹ýÖ¸Ã÷ÕâÁ½¸ö²ÎÊý£¬ObjectPoolÍ¨¹ýµ¥ÀýÄ£Ê½¹¹½¨Î¨Ò»µÄ¶ÔÏó³ØÊµÀý£¬
+ÕâÀï¶ÔÏóµÄ¹¹ÔìÆ÷µÄ²ÎÊýÉæ¼°¶à²ÎÊ±£¬´¦Àí·½Ê½£º
+~~~
+template<typename ...Args>
+	static Type* createObject(Args ... args)
+	{	//²»¶¨²ÎÊý  ¿É±ä²ÎÊý
+		Type* obj = new Type(args...);
+		//¿ÉÒÔ×öµãÏë×öµÄÊÂÇé
+		return obj;
+	}
+~~~
+* ¶ÔÏó³ØºÍÄÚ´æ³ØÊÇ¿ÉÒÔÍ¬Ê±Ê¹ÓÃµÄ£¬¶ÔÏó³ØÖÐµÄnewÒ²ÊÇÊ¹ÓÃÖØÔØµÄnew£¬ÕâÑù½øÒ»²½ÌáÉýÐ§ÂÊ¡£
