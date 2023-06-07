@@ -219,3 +219,109 @@ template<typename ...Args>
 	}
 ~~~
 * 对象池和内存池是可以同时使用的，对象池中的new也是使用重载的new，这样进一步提升效率。
+
+### 引入心跳检测，及时处理死连接，释放服务器资源
+
+#### 为什么需要心跳检测，心跳检测的原理，心跳检测的实现方式？
+
+在服务器开发中，服务端需要心跳检测的原因是为了监视客户端是否在线运行，并及时清理死连接和释放资源。
+
+心跳检测的原理是客户端和服务端之间定时发送一些简单的信息，比如一个空字符串或者一个特定的数据包，来告诉对方自己还在。如果在一定时间内没有收到对方的心跳信息，就认为对方已经掉线或者异常，从而关闭连接并触发onClose回调。
+
+心跳检测的方式有多种，比如：
+
+* 客户端定时发送心跳，服务端设定多少秒内没收到心跳关闭连接。
+* 服务端定时发送心跳，客户端设定多少秒内没收到心跳关闭连接。
+* 客户端和服务端互相发送心跳，双方都设定多少秒内没收到心跳关闭连接。
+
+#### 死连接出现的原因，死连接的危害，死连接的解决方式？
+
+死连接现象的原因可能有以下几种：
+* 客户端或服务端异常退出或崩溃，没有正常地关闭连接。
+* 网络故障或中断，导致连接断开或丢失。
+* 路由器或防火墙拦截或关闭了空闲的连接。
+* 服务端资源不足，无法处理过多的连接请求。
+
+死连接现象的危害可能有以下几种：
+* 占用服务端的内存和端口资源，影响性能和安全性。
+* 造成客户端的数据丢失或延迟，影响用户体验和业务逻辑。
+* 导致服务端无法及时感知客户端的状态，影响监控和管理。
+
+死连接现象的解决方法可能有以下几种：
+
+* 使用心跳检测机制，定时发送和接收简单的信息，判断连接是否存活。
+* 使用超时机制，设定连接的最大空闲时间，超过则关闭连接。
+* 使用异常处理机制，捕获和处理连接异常或错误，及时释放资源。
+* 使用负载均衡机制，分配和控制服务端的连接数，避免过载。
+
+#### 心跳检测和tcp的keepalive有什么区别？使用哪个更好？
+
+心跳检测和TCP的keepalive有以下几点区别：
+* 心跳检测是应用层的概念，是指客户端和服务端之间定时发送一些简单的信息，比如一个空字符串或者一个特定的数据包，来告诉对方自己还在。心跳检测的方式和频率可以由应用层自己定义和控制。
+* TCP的keepalive是传输层的概念，是指TCP协议提供的一种保活功能，用来探测连接对端是否存在，属于TCP协议栈的一部分。TCP的keepalive的参数和机制由操作系统决定，不同的操作系统可能有不同的默认值和设置方式
+
+使用哪个更好，取决于具体的场景和需求。一般来说，心跳检测比TCP的keepalive更灵活和可控，可以根据应用层的逻辑来设计和调整。但是心跳检测也会增加应用层的开发和维护成本，以及网络流量。TCP的keepalive则比较简单和方便，只需要在套接字上设置SO_KEEPALIVE选项即可开启或关闭 。但是TCP的keepalive也有一些局限性，比如可能会被路由器或防火墙拦截，或者无法适应应用层的变化。
+
+#### 如何在Linux系统中设置TCP keepalive的参数？
+
+首先，你需要在你的应用程序中设置SO_KEEPALIVE选项，来开启或关闭TCP keepalive功能。这可以通过setsockopt函数来实现，例如：
+
+~~~
+int optval = 1; // 1表示开启，0表示关闭
+setsockopt(socket_fd, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval));
+~~~
+
+其次，你需要配置TCP keepalive的三个参数，分别是：
+
+* tcp_keepalive_time: KeepAlive的空闲时长，或者说每次正常发送心跳的周期，默认值为7200s（2小时）。
+* tcp_keepalive_intvl: KeepAlive探测包的发送间隔，默认值为75s
+* tcp_keepalive_probes: 在tcp_keepalive_time之后，没有接收到对方确认，继续发送保活探测包次数，默认值为9（次）
+
+这些参数可以通过修改 /etc/sysctl.conf 文件来设置，例如：
+
+~~~
+net.ipv4.tcp_keepalive_time=600
+net.ipv4.tcp_keepalive_intvl=30
+net.ipv4.tcp_keepalive_probes=5
+~~~
+
+然后，你需要执行 sysctl -p 命令来使配置生效，或者重启系统。你可以使用 sysctl -a | grep keepalive 命令来查看当前的配置。
+
+#### 本项目中心跳检测的具体实现
+
+服务端为每个建立连接的客户端维护一个CellClient，并且设置一个心跳死亡计时，当客户端发送心跳包到服务端时，重置
+计时，这里不仅仅是心跳包，任意数据包都会重置计时。
+
+主要逻辑代码：
+
+~~~
+void CheckTime()
+	{
+		//当前时间戳
+		auto nowTime = CELLTime::getNowInMilliSec();
+		auto dt = nowTime - _oldTime;
+		_oldTime = nowTime;
+
+		for (auto iter = _clients.begin(); iter != _clients.end(); )
+		{
+			//心跳检测
+			if (iter->second->checkHeart(dt))
+			{
+				if (_pNetEvent)
+					_pNetEvent->OnNetLeave(iter->second);
+				_clients_change = true;
+				delete iter->second;
+				auto iterOld = iter;
+				iter++;
+				_clients.erase(iterOld);
+				continue;
+			}
+
+			////定时发送检测
+			//iter->second->checkSend(dt);
+
+			iter++;
+		}
+	}
+~~~
+
