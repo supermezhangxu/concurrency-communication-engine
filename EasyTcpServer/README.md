@@ -325,3 +325,59 @@ void CheckTime()
 	}
 ~~~
 
+### 解决多线程并发server异常退出问题
+
+问题的产生：
+
+该通讯引擎将任务的处理分别交给不同类型的server来处理，EasyTcpServer负责监听连接，CellServer负责收发数据，其中发数据是交给内部CellTaskServer
+来完成，这里面有一个问题，就是在CellServer和CellTaskServer里都有启动线程的操作，当这些对象在析构时，没有等到其启动的线程退出，便完成了析构，从而引起了错误。
+
+解决方式：
+
+该问题的本质即线程与对象绑定，在对象析构时，线程也应该退出，并且是立即退出，然后继续执行析构的过程，直到结束。
+
+问题的本质其实就是解决办法，在启动线程的对象中执行析构时，应该阻塞，等到线程退出发出信号唤醒，从而继续执行析构的过程。
+
+具体的代码，以CellServer为例：
+
+CellServer的Close
+~~~
+//CellServer::Close()
+//关闭Socket
+	void Close()
+	{
+		CELLLog::Info("CELLServer%d.Close begin\n", _id);
+		_taskServer.Close();
+		_thread.Close();
+		CELLLog::Info("CELLServer%d.Close end\n", _id);
+	}
+
+//CELLThread::Close()
+//关闭线程
+	void Close()
+	{
+		std::lock_guard<std::mutex> lock(_mutex);
+		if (_isRun)
+		{
+			_isRun = false;
+			_sem.wait();
+		}
+	}
+
+//CELLThread::OnWork()
+//线程的运行时的工作函数
+	void OnWork()
+	{
+		if (_onCreate)
+			_onCreate(this);
+		if (_onRun)
+			_onRun(this);
+		if (_onDestory)
+			_onDestory(this);
+
+		_sem.wakeup();
+~~~
+
+当调用close方法时，该对象通知其启动的线程结束，自身进入阻塞，等待启动的线程退出，唤醒该对象继续往下执行。
+从而实现多线程并发server安全退出。
+
