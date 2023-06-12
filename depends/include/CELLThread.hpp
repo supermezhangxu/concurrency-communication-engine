@@ -5,6 +5,12 @@
 
 class CELLThread
 {
+public:
+	static void Sleep(time_t dt)
+	{
+		std::chrono::milliseconds t(dt);
+		std::this_thread::sleep_for(t);
+	}
 private:
 	typedef std::function<void(CELLThread*)> EventCall;
 public:
@@ -47,9 +53,9 @@ public:
 	//如果使用会阻塞
 	void Exit()
 	{
-		std::lock_guard<std::mutex> lock(_mutex);
 		if (_isRun)
 		{
+			std::lock_guard<std::mutex> lock(_mutex);
 			_isRun = false;
 		}
 	}
@@ -71,6 +77,7 @@ protected:
 			_onDestory(this);
 
 		_sem.wakeup();
+		_isRun = false;
 	}
 private:
 	EventCall _onCreate;

@@ -19,15 +19,4 @@
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="easy_tcp_client.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="message_header.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="cell_timestamp.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
 </Project>

@@ -6,6 +6,8 @@
 #include"CELLServer.hpp"
 #include"INetEvent.hpp"
 #include"CELLNetWork.hpp"
+#include"CELLConfig.hpp"
+#include"CELLFDSet.hpp"
 
 #include<thread>
 #include<mutex>
@@ -23,6 +25,12 @@ private:
 	//
 	SOCKET _sock;
 protected:
+	//客户端发送缓冲区大小
+	int _nSendBuffSize;
+	//客户端接收缓冲区大小
+	int _nRecvBuffSize;
+	//客户端连接上限
+	int _nMaxClient;
 	//SOCKET recv计数
 	std::atomic_int _recvCount;
 	//收到消息计数
@@ -36,6 +44,9 @@ public:
 		_recvCount = 0;
 		_msgCount = 0;
 		_clientCount = 0;
+		_nSendBuffSize = CELLConfig::Instance().getInt("nSendBuffSize", SEND_BUFF_SZIE);
+		_nRecvBuffSize = CELLConfig::Instance().getInt("nRecvBuffSize", RECV_BUFF_SZIE);
+		_nMaxClient = CELLConfig::Instance().getInt("nMaxClient", FD_SETSIZE);
 	}
 	virtual ~EasyTcpServer()
 	{
@@ -47,16 +58,17 @@ public:
 		CELLNetWork::Init();
 		if (INVALID_SOCKET != _sock)
 		{
-			CELLLog::Info("warning, initSocket close old socket<%d>...\n", (int)_sock);
+			CELLLog_Warring("initSocket close old socket<%d>...", (int)_sock);
 			Close();
 		}
 		_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 		if (INVALID_SOCKET == _sock)
 		{
-			CELLLog::Info("error, create socket failed...\n");
+			CELLLog_PError("create socket failed...");
 		}
 		else {
-			CELLLog::Info("create socket<%d> success...\n", (int)_sock);
+			CELLNetWork::make_reuseaddr(_sock);
+			CELLLog_Info("create socket<%d> success...", (int)_sock);
 		}
 		return _sock;
 	}
@@ -91,10 +103,10 @@ public:
 		int ret = bind(_sock, (sockaddr*)&_sin, sizeof(_sin));
 		if (SOCKET_ERROR == ret)
 		{
-			CELLLog::Info("error, bind port<%d> failed...\n", port);
+			CELLLog_PError("bind port<%d> failed...", port);
 		}
 		else {
-			CELLLog::Info("bind port<%d> success...\n", port);
+			CELLLog_Info("bind port<%d> success...", port);
 		}
 		return ret;
 	}
@@ -106,10 +118,10 @@ public:
 		int ret = listen(_sock, n);
 		if (SOCKET_ERROR == ret)
 		{
-			CELLLog::Info("error, listen socket<%d> failed...\n",_sock);
+			CELLLog_PError("listen socket<%d> failed...",_sock);
 		}
 		else {
-			CELLLog::Info("listen port<%d> success...\n", _sock);
+			CELLLog_Info("listen port<%d> success...", _sock);
 		}
 		return ret;
 	}
@@ -128,13 +140,22 @@ public:
 #endif
 		if (INVALID_SOCKET == cSock)
 		{
-			CELLLog::Info("error, accept INVALID_SOCKET...\n");
+			CELLLog_PError("accept INVALID_SOCKET...");
 		}
 		else
-		{
-			//将新客户端分配给客户数量最少的cellServer
-			addClientToCELLServer(new CELLClient(cSock));
-			//获取IP地址 inet_ntoa(clientAddr.sin_addr)
+		{	
+			if (_clientCount < _nMaxClient)
+			{
+				CELLNetWork::make_reuseaddr(cSock);
+				//将新客户端分配给客户数量最少的cellServer
+				addClientToCELLServer(new CELLClient(cSock, _nSendBuffSize, _nRecvBuffSize));
+				//获取IP地址 inet_ntoa(clientAddr.sin_addr)
+			}
+			else {
+				//获取IP地址 inet_ntoa(clientAddr.sin_addr)
+				CELLNetWork::destorySocket(cSock);
+				CELLLog_Warring("Accept to nMaxClient");
+			}
 		}
 		return cSock;
 	}
@@ -153,11 +174,13 @@ public:
 		pMinServer->addClient(pClient);
 	}
 
+	template<class ServerT>
 	void Start(int nCELLServer)
 	{
 		for (int n = 0; n < nCELLServer; n++)
 		{
-			auto ser = new CELLServer(n+1);
+			auto ser = new ServerT();
+			ser->setId(n + 1);
 			_cellServers.push_back(ser);
 			//注册网络事件接受对象
 			ser->setEventObj(this);
@@ -172,7 +195,7 @@ public:
 	//关闭Socket
 	void Close()
 	{
-		CELLLog::Info("EasyTcpServer.Close begin\n");
+		CELLLog_Info("EasyTcpServer.Close begin");
 		_thread.Close();
 		if (_sock != INVALID_SOCKET)
 		{
@@ -182,14 +205,10 @@ public:
 			}
 			_cellServers.clear();
 			//关闭套节字socket
-#ifdef _WIN32
-			closesocket(_sock);
-#else
-			close(_sock);
-#endif
+			CELLNetWork::destorySocket(_sock);
 			_sock = INVALID_SOCKET;
 		}
-		CELLLog::Info("EasyTcpServer.Close end\n");
+		CELLLog_Info("EasyTcpServer.Close end");
 	}
 
 	//cellServer 4 多个线程触发 不安全
@@ -197,14 +216,14 @@ public:
 	virtual void OnNetJoin(CELLClient* pClient)
 	{
 		_clientCount++;
-		//CELLLog::Info("client<%d> join\n", pClient->sockfd());
+		//CELLLog_Info("client<%d> join", pClient->sockfd());
 	}
 	//cellServer 4 多个线程触发 不安全
 	//如果只开启1个cellServer就是安全的
 	virtual void OnNetLeave(CELLClient* pClient)
 	{
 		_clientCount--;
-		//CELLLog::Info("client<%d> leave\n", pClient->sockfd());
+		//CELLLog_Info("client<%d> leave", pClient->sockfd());
 	}
 	//cellServer 4 多个线程触发 不安全
 	//如果只开启1个cellServer就是安全的
@@ -216,39 +235,11 @@ public:
 	virtual void OnNetRecv(CELLClient* pClient)
 	{
 		_recvCount++;
-		//CELLLog::Info("client<%d> leave\n", pClient->sockfd());
+		//CELLLog_Info("client<%d> leave", pClient->sockfd());
 	}
-private:
+protected:
 	//处理网络消息
-	void OnRun(CELLThread* pThread)
-	{
-		while (pThread->isRun())
-		{
-			time4msg();
-			//伯克利套接字 BSD socket
-			fd_set fdRead;//描述符（socket） 集合
-						  //清理集合
-			FD_ZERO(&fdRead);
-			//将描述符（socket）加入集合
-			FD_SET(_sock, &fdRead);
-			///nfds 是一个整数值 是指fd_set集合中所有描述符(socket)的范围，而不是数量
-			///既是所有文件描述符最大值+1 在Windows中这个参数可以写0
-			timeval t = { 0, 1};
-			int ret = select(_sock + 1, &fdRead, 0, 0, &t); //
-			if (ret < 0)
-			{
-				CELLLog::Info("EasyTcpServer.OnRun select exit.\n");
-				pThread->Exit();
-				break;
-			}
-			//判断描述符（socket）是否在集合中
-			if (FD_ISSET(_sock, &fdRead))
-			{
-				FD_CLR(_sock, &fdRead);
-				Accept();
-			}
-		}
-	}
+	virtual void OnRun(CELLThread* pThread) = 0;
 
 	//计算并输出每秒收到的网络消息
 	void time4msg()
@@ -256,11 +247,16 @@ private:
 		auto t1 = _tTime.getElapsedSecond();
 		if (t1 >= 1.0)
 		{
-			CELLLog::Info("thread<%d>,time<%lf>,socket<%d>,clients<%d>,recv<%d>,msg<%d>\n", (int)_cellServers.size(), t1, _sock, (int)_clientCount, (int)(_recvCount / t1), (int)(_msgCount / t1));
+			CELLLog_Info("thread<%d>,time<%lf>,socket<%d>,clients<%d>,recv<%d>,msg<%d>", (int)_cellServers.size(), t1, _sock, (int)_clientCount, (int)_recvCount, (int)_msgCount);
 			_recvCount = 0;
 			_msgCount = 0;
 			_tTime.update();
 		}
+	}
+
+	SOCKET sockfd()
+	{
+		return _sock;
 	}
 };
 

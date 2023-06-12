@@ -25,21 +25,6 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CELL.hpp" />
-    <ClInclude Include="CELLBuffer.hpp" />
-    <ClInclude Include="CELLClient.hpp" />
-    <ClInclude Include="CELLLog.hpp" />
-    <ClInclude Include="CELLNetWork.hpp" />
-    <ClInclude Include="CELLSemaphore.hpp" />
-    <ClInclude Include="CELLServer.hpp" />
-    <ClInclude Include="CELLTask.hpp" />
-    <ClInclude Include="CELLThread.hpp" />
-    <ClInclude Include="CELLTimestamp.hpp" />
-    <ClInclude Include="EasyTcpServer.hpp" />
-    <ClInclude Include="INetEvent.hpp" />
-    <ClInclude Include="MessageHeader.hpp" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="memory_pool.png" />
     <Image Include="memory_pool2.png" />
     <Image Include="object_pool.png" />
@@ -122,6 +107,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\depends\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -137,6 +123,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\depends\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,6 +139,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\depends\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -167,6 +155,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\depends\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

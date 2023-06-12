@@ -381,3 +381,100 @@ CellServer的Close
 当调用close方法时，该对象通知其启动的线程结束，自身进入阻塞，等待启动的线程退出，唤醒该对象继续往下执行。
 从而实现多线程并发server安全退出。
 
+### 突破select的fd_set1024限制
+
+linux系统下进程可以打开的最大文件数量通常是1024，那么一个进程就无法监听超过1024的连接。
+要想突破限制，首先需要修改进程可以打开的最大文件数量，两种方式如下：
+~~~
+ulimit -n 65535 //临时修改，重启后失效
+
+//在/etc/security/limits.conf 添加下面两行 即可永久生效
+* soft nofile 65535
+* hard nofile 65535
+~~~
+接下来是修改fd_set的大小，在windows下fd_set是一个如下的结构体：
+~~~
+typedef struct fd_set {
+  u_int  fd_count; //套接字数量
+  SOCKET fd_array[FD_SETSIZE];//套接字数组
+} fd_set, FD_SET, *PFD_SET, *LPFD_SET;
+~~~
+在windows下修改fd_set中的数组大小非常方便，只需要重新定义一下FD_SETSIZE即可。
+而在linux下的定义：
+~~~
+/* fd_set for select and pselect.  */
+typedef struct
+  {
+    /* XPG4.2 requires this member name.  Otherwise avoid the name
+       from the global namespace.  */
+#ifdef __USE_XOPEN
+    __fd_mask fds_bits[__FD_SETSIZE / __NFDBITS];
+# define __FDS_BITS(set) ((set)->fds_bits)
+#else
+    __fd_mask __fds_bits[__FD_SETSIZE / __NFDBITS];
+# define __FDS_BITS(set) ((set)->__fds_bits)
+#endif
+  } fd_set;
+~~~
+简单来说他是一个用字节的一个位来表示一个文件描述符的状态的，1代表就绪。也就是有1024个位，就是128个字节。
+基于上述两种平台下的不同，统一封装一个CELLFDSet来突破1024限制。
+~~~
+public:
+	CELLFDSet()
+	{
+		int nSocketNum = CELL_MAX_FD;
+#ifdef _WIN32
+		_nfdSize = sizeof(u_int) + (sizeof(SOCKET)*nSocketNum);
+#else
+		_nfdSize = nSocketNum / (8 * sizeof(char));
+#endif // _WIN32
+		_pfdset = (fd_set *)new char[_nfdSize];
+		memset(_pfdset, 0, _nfdSize);
+	}
+
+private:
+	fd_set * _pfdset = nullptr;
+	size_t _nfdSize = 0;
+~~~
+简单来说，在windows下只需要申请我们想要的大小的内存，然后强转为fd_set即可。
+而在linux下由于我们是用位来表示状态的，因此需要换算一下我们想要的大小所需的字节数，然后在申请。
+
+而对于与fd_set相关的几个函数，例如FD_SET， FD_ZERO， FD_ISSET， FD_CLR，将这几个函数进行封装即可，但是有几个需要点小处理。
+~~~
+inline void add(SOCKET s)
+	{
+#ifdef _WIN32
+		FD_SET(s, _pfdset);
+#else
+		if(s < CELL_MAX_FD)
+		{
+			FD_SET(s, _pfdset);
+		}else{
+			CELLLog_Error("CELLFDSet::add sock<%d>, CELL_MAX_FD<%d>",(int)s,CELL_MAX_FD);
+		}
+#endif // _WIN32
+	}
+
+	inline void zero()
+	{
+#ifdef _WIN32
+		FD_ZERO(_pfdset);
+#else
+		memset(_pfdset, 0, _nfdSize);
+#endif // _WIN32
+	}
+~~~
+比如这个zero函数，在两种平台下的实现不一样，需要特殊处理。在linux平台下，由于FD_ZERO
+~~~
+/* We don't use `memset' because this would require a prototype and
+   the array isn't too big.  */
+#define __FD_ZERO(s) \
+  do {                                                                        \
+    unsigned int __i;                                                         \
+    fd_set *__arr = (s);                                                      \
+    for (__i = 0; __i < sizeof (fd_set) / sizeof (__fd_mask); ++__i)          \
+      __FDS_BITS (__arr)[__i] = 0;                                            \
+  } while (0)
+~~~
+这个循环的次数是sizeof(fd_set)，这个fd_set的大小是固定的，数组长度的那个宏定义是固定的不可变，因此这里就会有问题。
+所以不可以直接用FD_ZERO清零，而是使用memset清零。而在windows下的FD_ZERO只是修改了结构体中的第一个参数的大小，将其置为零。
