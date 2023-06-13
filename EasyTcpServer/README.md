@@ -478,3 +478,135 @@ inline void add(SOCKET s)
 ~~~
 这个循环的次数是sizeof(fd_set)，这个fd_set的大小是固定的，数组长度的那个宏定义是固定的不可变，因此这里就会有问题。
 所以不可以直接用FD_ZERO清零，而是使用memset清零。而在windows下的FD_ZERO只是修改了结构体中的第一个参数的大小，将其置为零。
+
+### select升级为epoll和iocp
+
+#### 什么是epoll
+
+epoll接口是为解决Linux内核处理大量文件描述符而提出的方案。该接口属于Linux下多路I/O复用接口中select/poll的增强。其经常应用于Linux下高并发服务型程序，特别是在大量并发连接中只有少部分连接处于活跃下的情况 (通常是这种情况)，在该情况下能显著的提高程序的CPU利用率。
+
+##### epoll设计思路
+
+（1）epoll在Linux内核中构建了一个文件系统，该文件系统采用红黑树来构建，红黑树在增加和删除上面的效率极高，因此是epoll高效的原因之一。有兴趣可以百度红黑树了解，但在这里你只需知道其算法效率超高即可。
+
+（2）epoll提供了两种触发模式，水平触发(LT)和边沿触发(ET)。当然，涉及到I/O操作也必然会有阻塞和非阻塞两种方案。目前效率相对较高的是 epoll+ET+非阻塞I/O 模型，在具体情况下应该合理选用当前情形中最优的搭配方案。
+
+（3）epoll所支持的FD上限是最大可以打开文件的数目，这个数字一般远大于1024,举个例子，在1GB内存的机器上大约是10万左右，具体数目可以下面语句查看，一般来说这个数目和系统内存关系很大。
+
+##### select的缺点与不足
+
+（1）单进程可以打开fd有限制；
+
+（2）对socket进行扫描时是线性扫描，即采用轮询的方法，效率较低；
+
+（3）用户空间和内核空间的复制非常消耗资源；
+
+epoll支持的最大链接数是进程最大可打开的文件的数目。
+
+##### epoll一定优于select吗？什么时候不是？
+
+尽管如此，epoll 的性能并不必然比 select 高，对于 fd 数量较少并且 fd IO 都非常繁忙的情况 select 在性能上反而有优势。
+
+#### epoll的工作流程
+
+##### epoll_create
+
+函数原型 ：int epoll_create(int size);
+
+功能说明 ：创建一个 epoll 对象，返回该对象的描述符，注意要使用 close 关闭该描述符。
+
+原理分析 ：
+
+核心的代码就是 struct eventpoll *ep = (struct eventpoll *)calloc(1,sizeof(struct eventpoll)) 创建一个 struct eventpoll 对象，然后对其成员进行初始化。
+
+struct eventpoll 的定义如下，rbr 是一棵红黑树，支持快速查找键值对，所有需要加入监听事件的描述符都需要添加到这棵红黑树来，rbcnt 记录红黑树节点个数。rdlist 是一个双向链表，当红黑树上监听的描述符发生对应的监听事件时，内核会将这个节点插入到该双向链表来，rdnum 是双向链表节点的个数，也就是发生了事件的节点个数。
+
+![Eventpoll](eventpoll.png)
+ 
+![Eventpoll2](eventpoll2.png)
+
+##### epoll_ctl
+
+函数原型 ：int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
+
+功能说明 ：操作控制 epoll 对象，主要涉及 epoll 红黑树上节点的一些操作，比如添加节点，删除节点，修改节点事件。
+
+参数说明 ：
+
+epfd：通过 epoll_create 创建的 epoll 对象句柄。
+
+op：对红黑树的操作，添加节点、删除节点、修改节点监听的事件，分别对应 EPOLL_CTL_ADD，EPOLL_CTL_DEL，EPOLL_CTL_MOD。
+
+添加事件：相当于往红黑树添加一个节点，每个客户端连接服务器后会有一个通讯套接字，每个连接的通讯套接字都不重复，所以这个通讯套接字就是红黑树的 key。
+
+修改事件：把红黑树上监听的 socket 对应的监听事件做修改。
+
+删除事件：相当于取消监听 socket 的事件。
+
+fd：需要添加监听的 socket 描述符，可以是监听套接字，也可以是与客户端通讯的通讯套接字。
+
+event：事件信息。
+
+关于event参数的讲解：
+
+~~~
+typedef union epoll_data 
+{
+  void        *ptr;
+  int          fd;
+  uint32_t     u32;
+  uint64_t     u64;
+} epoll_data_t;
+ 
+struct epoll_event 
+{
+  uint32_t     events;      /* Epoll 事件 */
+  epoll_data_t data;        /* 用户数据 */
+};
+~~~
+
+events：EPOLLIN EPOLLOUT 
+
+EPOLLRDHUP（监听套接字关闭或半关闭事件） 
+
+EPOLLPRI（监听紧急数据可读事件）
+
+EPOLLET （设置ET模式）
+
+##### epoll_wait
+
+函数原型 ：int epoll_wait(int epid, struct epoll_event *events, int maxevents, int timeout);
+
+功能说明 ：阻塞一段时间并等待事件发生，返回事件集合，也就是获取内核的事件通知。说白了就是遍历双向链表，把双向链表里的节点数据拷贝出来，拷贝完毕后就从双向链表移除。
+
+参数说明
+
+epid：epoll_create 返回的 epoll 对象描述符。
+
+events：存放就绪的事件集合，这个是传出参数。
+
+maxevents：代表可以存放的事件个数，也就是 events 数组的大小。
+
+timeout：阻塞等待的时间长短，以毫秒为单位，如果传入 -1 代表阻塞等待。
+
+返回值说明
+
+返回值大于0 ：代表有几个我们希望监听的事件发生了
+
+返回值等于0 ：timeout 超时时间到了
+
+#### LT和ET实现的区别
+
+	对于水平触发模式，一个事件只要有，就会一直触发。 对于边缘触发模式，只有一个事件从无到有才会触发。
+
+LT(level triggered) 是 缺省 的工作方式 ，并且同时支持 block 和 no-block socket. 在这种做法中，内核告诉你一个文件描述符是否就绪了，然后你可以对这个就绪的 fd 进行 IO 操作。如果你不作任何操作，内核还是会继续通知你的，所以，这种模式编程出错误可能性要小一点。传统的 select/poll 都是这种模型的代表．
+
+ET(edge-triggered) 是高速工作方式 ，只支持 no-block socket 。在这种模式下，当描述符从未就绪变为就绪时，内核通过 epoll 告诉你。然后它会假设你知道文件描述符已经就绪，并且不会再为那个文件描述符发送更多的就绪通知，直到你做了某些操作导致那个文件描述符不再为就绪状态了 ( 比如，你在发送，接收或者接收请求，或者发送接收的数据少于一定量时导致了一个 EWOULDBLOCK 错误）。但是请注意，如果一直不对这个 fd 作 IO 操作 ( 从而导致它再次变成未就绪 ) ，内核不会发送更多的通知 (only once), 不过在 TCP 协议中， ET 模式的加速效用仍需要更多的 benchmark 确认。
+
+#### 检测网络事件的正确姿势
+
+在 select、poll 和 epoll 的 LT 模式下，可以直接设置检测 fd 的可读事件；
+
+在 select、poll 和 epoll 的 LT 模式下不要直接设置检测 fd 的可写事件，应该先尝试发送数据，因为 TCP 窗口太小发不出去再设置检测 fd 的可写事件，一旦数据发出去应立即取消对可写事件的检测。
+
+在 epoll 的 ET 模式下，需要发送数据时，(((每次)))都要重新设置检测可写事件。

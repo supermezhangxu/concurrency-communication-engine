@@ -32,5 +32,14 @@
     <Image Include="object_pool.png">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="eventpoll.png">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="eventpoll2.png">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="epoll_create.png">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

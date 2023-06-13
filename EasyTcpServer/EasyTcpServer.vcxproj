@@ -25,6 +25,9 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="epoll_create.png" />
+    <Image Include="eventpoll.png" />
+    <Image Include="eventpoll2.png" />
     <Image Include="memory_pool.png" />
     <Image Include="memory_pool2.png" />
     <Image Include="object_pool.png" />
