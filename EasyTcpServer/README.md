@@ -595,6 +595,18 @@ timeout£º×èÈûµÈ´ýµÄÊ±¼ä³¤¶Ì£¬ÒÔºÁÃëÎªµ¥Î»£¬Èç¹û´«Èë -1 ´ú±í×èÈûµÈ´ý¡£
 
 ·µ»ØÖµµÈÓÚ0 £ºtimeout ³¬Ê±Ê±¼äµ½ÁË
 
+#### epollÏà½ÏÓÚselectµÄÓÅÊÆ£¬»òÕßÊÇ½â¾öÁËselectµÄÄÄÐ©ÎÊÌâ
+
+selectµÄÎÊÌâ£º
+* Ã¿´Îµ÷ÓÃselectÊ±£¬ÐèÒª°Ñfd_set´«Èëµ½ÄÚºËÖÐ£¬Õâ¾ÍÔö¼ÓÁË¶àÓàµÄ¿½±´£¬ÎªÊ²Ã´²»Ö±½ÓÔÚÄÚºËÖÐÎ¬»¤£¿
+* selectÔÚ±»»½ÐÑÊ±£¬²¢²»ÖªµÀÊÇÄÄ¸ösocketµÄÊÂ¼þ¾ÍÐ÷£¬ÎªÊ²Ã´²»Ö±½Ó¸æËßselectÄÄ¸ösocket¾ÍÐ÷ÁË£¿
+
+»ùÓÚÉÏÊöÁ½¸öÎÊÌâ£¬epoll½øÐÐÁËÓÅ»¯£¬Ò²¾ÍÊÇepoll½ÏÓÚselectµÄÓÅÊÆËùÔÚ¡£
+* Ê×ÏÈepollÔÚÄÚºËÖÐÎ¬»¤ÁËÒ»¸öÐèÒª¼àÌýµÄsocket¼¯ºÏ£¬¼¯ºÏÊ¹ÓÃºìºÚÊ÷ÊµÏÖ£¬ºìºÚÊ÷µÄÓÅÊÆÊÇÔÚÌí¼ÓºÍÉ¾³ýµÄ³¡¾°ÏÂËÙ¶È¿ì¡£Í¨¹ýepoll_ctl·½·¨À´Ìí¼ÓºÍÉ¾³ýÏëÒª¼àÌýµÄsocketÊÂ¼þ¡£
+Õâ¾Í½â¾öÁËselectÃ¿´Î¼àÌýÊ±ÐèÒª¿½±´fd_setµ½ÄÚºËÖÐ¡£
+* Õë¶ÔµÚ¶þ¸öÎÊÌâ£¬epollÒýÈëÁËready_list£¨Ë«ÏòÁ´±í£©£¬µ±socket¼àÌýÊÂ¼þÂú×ãÊ±»á¼ÓÈëµ½ready_listÖÐ£¬ÕâÑùepollÔÚ±»»½ÐÑºó£¬Ö»ÐèÒª±éÀúÕâ¸öready_list¼´¿É¡£Õâ¸ölistÒ»¶¨ÊÇÂú×ãÌõ¼þµÄsocket£¬²»ÓÃÏñselectÔÚÈ¥×öµÍÐ§µÄ±éÀúÁË¡£
+ÁíÍâ£¬epollÊ¹ÓÃmmap¼ÓËÙÄÚºËÓëÓÃ»§¿Õ¼äµÄÏûÏ¢´«µÝ£¬¼õÉÙ¿½±´¡£
+
 #### LTºÍETÊµÏÖµÄÇø±ð
 
 	¶ÔÓÚË®Æ½´¥·¢Ä£Ê½£¬Ò»¸öÊÂ¼þÖ»ÒªÓÐ£¬¾Í»áÒ»Ö±´¥·¢¡£ ¶ÔÓÚ±ßÔµ´¥·¢Ä£Ê½£¬Ö»ÓÐÒ»¸öÊÂ¼þ´ÓÎÞµ½ÓÐ²Å»á´¥·¢¡£
@@ -610,3 +622,53 @@ ET(edge-triggered) ÊÇ¸ßËÙ¹¤×÷·½Ê½ £¬Ö»Ö§³Ö no-block socket ¡£ÔÚÕâÖÖÄ£Ê½ÏÂ£¬µ±ÃèÊ
 ÔÚ select¡¢poll ºÍ epoll µÄ LT Ä£Ê½ÏÂ²»ÒªÖ±½ÓÉèÖÃ¼ì²â fd µÄ¿ÉÐ´ÊÂ¼þ£¬Ó¦¸ÃÏÈ³¢ÊÔ·¢ËÍÊý¾Ý£¬ÒòÎª TCP ´°¿ÚÌ«Ð¡·¢²»³öÈ¥ÔÙÉèÖÃ¼ì²â fd µÄ¿ÉÐ´ÊÂ¼þ£¬Ò»µ©Êý¾Ý·¢³öÈ¥Ó¦Á¢¼´È¡Ïû¶Ô¿ÉÐ´ÊÂ¼þµÄ¼ì²â¡£
 
 ÔÚ epoll µÄ ET Ä£Ê½ÏÂ£¬ÐèÒª·¢ËÍÊý¾ÝÊ±£¬(((Ã¿´Î)))¶¼ÒªÖØÐÂÉèÖÃ¼ì²â¿ÉÐ´ÊÂ¼þ¡£
+
+### selectÉý¼¶ÎªIOCP
+
+#### IOCP¼ò½é
+
+IOCP£¨Input/Output Completion Ports£©ÊÇÒ»ÖÖ Windows ²Ù×÷ÏµÍ³Ìá¹©µÄ¸ßÐÔÄÜ¡¢¸ßÀ©Õ¹ÐÔµÄ I/O ¶àÂ·¸´ÓÃ»úÖÆ¡£ËüÍ¨¹ýÒì²½ I/O µÄ·½Ê½À´ÊµÏÖ I/O ²Ù×÷£¬Ïà¶ÔÓÚ´«Í³µÄÍ¬²½ I/O£¬¾ßÓÐ¸üºÃµÄÐÔÄÜ¡¢¿ÉÀ©Õ¹ÐÔºÍ³ÌÐò½¡×³ÐÔ¡£
+
+IOCP »ùÓÚÄÚºËÊÂ¼þ¶ÔÏó£¬Ö§³Ö I/O Íê³ÉÊÂ¼þÍ¨Öª¡¢¼ÆÊ±Æ÷Í¨ÖªºÍ×Ô¶¨ÒåÊÂ¼þÍ¨Öª¡£ËüÖ÷ÒªÓÉ I/O Íê³É¶Ë¿Ú¶ÔÏó¡¢I/O Éè±¸¶ÔÏó¡¢ÄÚºË I/O ÇëÇó°üºÍÏß³Ì³ØµÈ¶à¸ö×é¼þ¹¹³É¡£
+
+IOCP µÄ»ù±¾¹¤×÷Á÷³ÌÈçÏÂ£º
+
+1.´´½¨ I/O Íê³É¶Ë¿Ú¶ÔÏó£¬²¢½«ÐèÒª½øÐÐÒì²½ I/O ²Ù×÷µÄ I/O Éè±¸¶ÔÏó¹ØÁªµ½¸Ã I/O Íê³É¶Ë¿Ú¶ÔÏóÉÏ¡£
+
+2.³ÌÐòÍ¨¹ý´´½¨ÄÚºË I/O ÇëÇó°ü£¬²¢½«ÆäÌá½»µ½²Ù×÷ÏµÍ³ÄÚºËÖÐ´¦Àí¡£
+
+3.ÄÚºË I/O ÇëÇóÍê³Éºó£¬²Ù×÷ÏµÍ³½«Òì²½Íê³ÉµÄ I/O ÊÂ¼þÍ¨Öª¸øÓ¦ÓÃ³ÌÐò¡£
+
+4.Ó¦ÓÃ³ÌÐòÍ¨¹ý»ñÈ¡ I/O Íê³É¶Ë¿Ú¶ÔÏóµÄÄÚºËÒì²½ I/O ÊÂ¼þ¶ÓÁÐÖÐµÄÊÂ¼þÐÅÏ¢²¢´¦Àí¡£
+
+5.Ó¦ÓÃ³ÌÐòÊ¹ÓÃÏß³Ì³Ø´¦Àí¶à¸ö²¢·¢ I/O ÇëÇó£¬Ìá¸ß³ÌÐòµÄ²¢·¢ÄÜÁ¦ºÍÏìÓ¦ËÙ¶È¡£
+
+#### IOCPÏà½ÏÓÚselectµÄÓÅÊÆ
+
+1.I/O Íê³ÉÍ¨Öª»úÖÆ£¬±ÜÃâ CPU ·±Ã¦ÂÖÑ¯
+
+select Ä£ÐÍÐèÒªÓ¦ÓÃ³ÌÐò²»¶ÏÂÖÑ¯ËùÓÐµÄÎÄ¼þÃèÊö·ûÁÐ±í£¬´Ó¶ø¼ì²âÊÇ·ñÓÐ¿É¶Á¡¢¿ÉÐ´»ò´íÎóÊÂ¼þ£¬ÕâÖÖ·½Ê½»áÕ¼ÓÃ´óÁ¿ CPU Ê±¼ä¡£Ïà±ÈÖ®ÏÂ£¬IOCP »úÖÆÊÇÒ»ÖÖ»ùÓÚ I/O Íê³ÉÍ¨Öª»úÖÆµÄÒì²½ I/O »úÖÆ£¬µ±ÄÚºË I/O ÇëÇóÍê³Éºó£¬²Ù×÷ÏµÍ³»áÍ¨ÖªÓ¦ÓÃ³ÌÐò½øÐÐ´¦Àí£¬Ó¦ÓÃ³ÌÐò¿ÉÒÔÍ¨¹ýÏß³Ì³ØÂÖÁ÷´¦ÀíËùÓÐ I/O Íê³ÉÊÂ¼þ£¬´Ó¶ø±ÜÃâÁË CPU ·±Ã¦ÂÖÑ¯¡£
+
+2.Ö§³Ö¸ß²¢·¢Á¬½Ó
+
+select Ä£ÐÍÊ¹ÓÃµ¥Ïß³Ì»òÓÐÏÞÏß³ÌÄ£Ê½£¬ÄÑÒÔ´¦Àí´ó¹æÄ£ÇëÇó£¬IOCP ÀûÓÃÁË¿ÉÀ©Õ¹µÄÏß³Ì³Ø¼¼Êõ£¬Ê¹µÃÏµÍ³ÄÜ¹»¸üºÃµØ´¦Àí²¢·¢ÇëÇó£¬Í¬Ê±Ò²Ìá¸ßÁË´úÂëÔËÐÐµÄÎÈ¶¨ÐÔºÍ¿É¿¿ÐÔ¡£
+
+3.¸üÉÙµÄÉÏÏÂÎÄÇÐ»»ºÍÄÚ´æ¿ªÏú
+
+ÔÚ select Ä£ÐÍÖÐÐèÒªÏòÄÚºË´«µÝ socket ÎÄ¼þÃèÊö·û¼¯ºÏ£¬²¢ÇÒÐèÒªÂÖÑ¯´¦ÀíËùÓÐµÄÎÄ¼þÃèÊö·û£¬²¢¼ÓËø£¬¶øÔÚ IOCP ÖÐÖ»ÐèÒªÆô¶¯Ïß³Ì³ØµÈ´ýÒì²½ I/O Íê³É£¬ÄÜ¹»¼õÉÙÉÏÏÂÎÄÇÐ»»ºÍÄÚ´æÏûºÄ¡£
+
+4.ÄÜ¹»ÀûÓÃ¶àºË´¦ÀíÆ÷
+
+IOCP Ö§³Ö¶à¸öÏß³Ì¡¢Í¬Ê±Ò²Ö§³Ö<<¶àºË´¦ÀíÆ÷>>£¬ÄÜ¹»ÓÐÐ§µØÀûÓÃ CPU ´¦ÀíÄÜÁ¦£¬Ìá¸ßÁË³ÌÐòµÄ²¢·¢ÄÜÁ¦ºÍÖ´ÐÐÐ§ÂÊ¡£
+
+#### IOCPÓëepoll±È½Ï
+
+1£ºIOCPÊÇWINDOWSÏµÍ³ÏÂÊ¹ÓÃ¡£EpollÊÇLinuxÏµÍ³ÏÂÊ¹ÓÃ¡£
+
+2£ºIOCPÊÇIO²Ù×÷Íê±ÏÖ®ºó£¬Í¨¹ýGetº¯Êý»ñµÃÒ»¸öÍê³ÉµÄÊÂ¼þÍ¨Öª¡£
+EpollÊÇµ±ÄãÏ£Íû½øÐÐÒ»¸öIO²Ù×÷Ê±£¬ÏòEpoll²éÑ¯ÊÇ·ñ¿É¶Á»òÕß¿ÉÐ´£¬Èô´¦ÓÚ¿É¶Á»ò¿ÉÐ´×´Ì¬ºó£¬Epoll»áÍ¨¹ýepoll_wait½øÐÐÍ¨Öª¡£
+
+3£ºIOCP·â×°ÁËÒì²½µÄÏûÏ¢ÊÂ¼þµÄÍ¨Öª»úÖÆ£¬Í¬Ê±·â×°ÁË²¿·ÖIO²Ù×÷¡£µ«Epoll½ö½ö·â×°ÁËÒ»¸öÒì²½ÊÂ¼þµÄÍ¨Öª»úÖÆ£¬²¢²»¸ºÔðIO¶ÁÐ´²Ù×÷¡£Epoll±£³ÖÁËÊÂ¼þÍ¨ÖªºÍIO²Ù×÷¼äµÄ¶ÀÁ¢ÐÔ£¬¸ü¼Ó¼òµ¥Áé»î¡£
+
+4£º »ùÓÚÉÏÃæµÄÃèÊö£¬ÎÒÃÇ¿ÉÒÔÖªµÀEpoll²»¸ºÔðIO²Ù×÷£¬ËùÒÔËüÖ»¸æËßÄãµ±Ç°¿É¶Á¿ÉÐ´ÁË£¬²¢ÇÒ½«Ð­Òé¶ÁÐ´»º³åÌî³ä£¬ÓÉÓÃ»§È¥¶ÁÐ´¿ØÖÆ£¬´ËÊ±ÎÒÃÇ¿ÉÒÔ×ö³ö¶î ÍâµÄÐí¶à²Ù×÷¡£IOCPÔòÖ±½Ó½«IOÍ¨µÀÀïµÄ¶ÁÐ´²Ù×÷¶¼×öÍêÁË²ÅÍ¨ÖªÓÃ»§£¬µ±IOÍ¨µÀÀï·¢ÉúÁË¶ÂÈûµÈ×´¿öÎÒÃÇÊÇÎÞ·¨¿ØÖÆµÄ¡£
+
