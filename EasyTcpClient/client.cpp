@@ -4,10 +4,14 @@
 #include"CELLConfig.hpp"
 #include"CELLThread.hpp"
 #include"CELLMsgStream.hpp"
+#include"CELLTimeEvent.hpp"
+#include"CELLTimeEventPool.hpp"
 
 #include<atomic>
 #include<list>
 #include<vector>
+#include<iostream>
+
 using namespace std;
 
 //服务端IP地址
@@ -72,6 +76,11 @@ public:
 		{
 			netmsg_NewUserJoin* userJoin = (netmsg_NewUserJoin*)header;
 			//CELLLog_Info("<socket=%d> recv msgType：CMD_NEW_USER_JOIN", (int)_pClient->sockfd());
+		}
+		break;
+		case CMD_S2C_HEART:
+		{			
+			CELLLog_Info("<socket=%d> recv msgType：CMD_S2C_HEART", (int)_pClient->sockfd());
 		}
 		break;
 		case CMD_ERROR:
@@ -139,6 +148,11 @@ void WorkThread(CELLThread* pThread, int id)
 {
 	//n个线程 id值为 1~n
 	CELLLog_Info("thread<%d>,start", id);
+
+	
+	EventPool::EventPool pool(102400);
+	pool.Start();
+
 	//客户端数组
 	vector<MyClient*> clients(nClient);
 	//计算本线程客户端在clients中对应的index
@@ -160,6 +174,21 @@ void WorkThread(CELLThread* pThread, int id)
 			break;
 		if (SOCKET_ERROR == clients[n]->Connect(strIP, nPort))
 			break;
+
+		//为每个客户端添加定时任务，定时发送心跳包，以维持长连接
+		EventPool::TimeEvent time_event(std::chrono::seconds(10));
+		time_event.SetCallBack([clients, n](bool exit) -> bool {
+			if (exit == true) {
+				std::cout << "pool exit" << std::endl;
+				return false;
+			}
+			netmsg_c2s_Heart heart_data;
+			clients[n]->SendData(&heart_data);
+			std::cout << "client send heart data to server" << std::endl;
+			return true;
+		});
+		pool.PushTimeEvent(std::move(time_event));
+
 		nConnect++;
 		CELLThread::Sleep(0);
 	}
@@ -229,6 +258,10 @@ void WorkThread(CELLThread* pThread, int id)
 		}
 		CELLThread::Sleep(nWorkSleep);
 	}
+	
+	//关闭定时任务
+	pool.Stop();
+
 	//--------------------------
 	//关闭消息收发线程
 	//tRun.Close();
@@ -252,7 +285,7 @@ int main(int argc, char* args[])
 	strIP = CELLConfig::Instance().getStr("strIP", "127.0.0.1");
 	nPort = CELLConfig::Instance().getInt("nPort", 9527);
 	nThread = CELLConfig::Instance().getInt("nThread", 1);
-	nClient = CELLConfig::Instance().getInt("nClient", 10000);
+	nClient = CELLConfig::Instance().getInt("nClient", 10);
 	nMsg = CELLConfig::Instance().getInt("nMsg", 10);
 	nSendSleep = CELLConfig::Instance().getInt("nSendSleep", 100);
 	nSendBuffSize = CELLConfig::Instance().getInt("nSendBuffSize", SEND_BUFF_SZIE);

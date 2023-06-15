@@ -72,6 +72,7 @@ public:
 			OnConnect();
 			//CELLLog_Info("<socket=%d> connect <%s:%d> success...", (int)_pClient->sockfd(), ip, port);
 		}
+
 		return ret;
 	}
 

@@ -113,6 +113,7 @@ public:
 			netmsg_s2c_Heart ret;
 			pClient->SendData(&ret);
 		}
+		break;
 		default:
 		{
 			CELLLog_Info("recv <socket=%d> undefine msgType,dataLen：%d", pClient->sockfd(), header->dataLength);
