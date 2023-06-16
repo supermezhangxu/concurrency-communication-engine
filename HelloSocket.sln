@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EasyTcpClient", "EasyTcpCli
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloTimer", "HelloTimer\HelloTimer.vcxproj", "{0D5919BD-E798-4FFC-867D-5DDDF75583A8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloLogger", "HelloLogger\HelloLogger.vcxproj", "{D8DA736E-61A0-4E82-B1DD-D7D28AC832F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -61,6 +63,14 @@ Global
 		{0D5919BD-E798-4FFC-867D-5DDDF75583A8}.Release|x64.Build.0 = Release|x64
 		{0D5919BD-E798-4FFC-867D-5DDDF75583A8}.Release|x86.ActiveCfg = Release|Win32
 		{0D5919BD-E798-4FFC-867D-5DDDF75583A8}.Release|x86.Build.0 = Release|Win32
+		{D8DA736E-61A0-4E82-B1DD-D7D28AC832F1}.Debug|x64.ActiveCfg = Debug|x64
+		{D8DA736E-61A0-4E82-B1DD-D7D28AC832F1}.Debug|x64.Build.0 = Debug|x64
+		{D8DA736E-61A0-4E82-B1DD-D7D28AC832F1}.Debug|x86.ActiveCfg = Debug|Win32
+		{D8DA736E-61A0-4E82-B1DD-D7D28AC832F1}.Debug|x86.Build.0 = Debug|Win32
+		{D8DA736E-61A0-4E82-B1DD-D7D28AC832F1}.Release|x64.ActiveCfg = Release|x64
+		{D8DA736E-61A0-4E82-B1DD-D7D28AC832F1}.Release|x64.Build.0 = Release|x64
+		{D8DA736E-61A0-4E82-B1DD-D7D28AC832F1}.Release|x86.ActiveCfg = Release|Win32
+		{D8DA736E-61A0-4E82-B1DD-D7D28AC832F1}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
