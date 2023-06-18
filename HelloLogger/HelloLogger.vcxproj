@@ -145,7 +145,7 @@
     <ClCompile Include="CELLLogFile.cpp" />
     <ClCompile Include="CELLLogging.cpp" />
     <ClCompile Include="CELLLogStream.cpp" />
-    <ClCompile Include="CELLTimeStamp.cpp" />
+    <ClCompile Include="CELLTimeStampForLogger.cpp" />
     <ClCompile Include="HelloLogger.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -159,7 +159,7 @@
     <ClInclude Include="CELLNonCopyable.h" />
     <ClInclude Include="CELLSemaphore.hpp" />
     <ClInclude Include="CELLThread.h" />
-    <ClInclude Include="CELLTimeStamp.h" />
+    <ClInclude Include="CELLTimeStampForLogger.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

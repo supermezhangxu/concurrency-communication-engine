@@ -19,6 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\HelloLogger\CELLAsyncLogging.cpp" />
+    <ClCompile Include="..\HelloLogger\CELLCurrentThread.cpp" />
+    <ClCompile Include="..\HelloLogger\CELLFileUtil.cpp" />
+    <ClCompile Include="..\HelloLogger\CELLLogFile.cpp" />
+    <ClCompile Include="..\HelloLogger\CELLLogging.cpp" />
+    <ClCompile Include="..\HelloLogger\CELLLogStream.cpp" />
+    <ClCompile Include="..\HelloLogger\CELLTimeStampForLogger.cpp" />
     <ClCompile Include="server.cpp" />
   </ItemGroup>
   <ItemGroup>

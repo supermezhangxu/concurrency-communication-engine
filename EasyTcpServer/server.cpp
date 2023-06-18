@@ -3,6 +3,8 @@
 #include"EasyIOCPServer.hpp"
 #include"CELLMsgStream.hpp"
 #include"CELLConfig.hpp"
+#include "CELLAsyncLogging.h"
+#include "CELLLogging.h"
 
 class MyServer : public EasyIOCPServer
 {
@@ -156,11 +158,36 @@ int argToInt(int argc, char* args[], int index, int def, const char* argName)
 	return def;
 }
 
+AsyncLogging* g_asyncLog = NULL;
+
+inline AsyncLogging* getAsyncLog()
+{
+	return g_asyncLog;
+}
+
+static const off_t kRollSize = 1 * 1024 * 1024;
+
+void asyncLog(const char* msg, int len)
+{
+	AsyncLogging* logging = getAsyncLog();
+	if (logging)
+	{
+		logging->append(msg, len);
+	}
+}
+
 int main(int argc, char* args[])
 {
 	//设置运行日志名称
 	CELLLog::Instance().setLogPath("serverLog", "w", false);
 	CELLConfig::Instance().Init(argc, args);
+
+	AsyncLogging log("helloAsync", kRollSize);
+	g_asyncLog = &log;
+	Logger::setOutput(asyncLog); // 为Logger设置输出回调, 重新配接输出位置
+	log.start();
+
+	LOG_INFO << "my server start up...";
 
 	const char* strIP = CELLConfig::Instance().getStr("strIP", "any");
 	uint16_t nPort = CELLConfig::Instance().getInt("nPort", 9527);

@@ -1,12 +1,13 @@
 ﻿#include "CELLAsyncLogging.h"
 #include "CELLLogging.h"
-#include "CELLTimestamp.h"
+#include "CELLTimestampForLogger.h"
 
 #include <stdio.h>
 #include <thread>
 #include <chrono>
 
 static const off_t kRollSize = 1 * 1024 * 1024;
+
 AsyncLogging* g_asyncLog = NULL;
 
 inline AsyncLogging* getAsyncLog()
@@ -30,7 +31,8 @@ void test_Logging()
 
 void test_AsyncLogging()
 {
-    const int n = 3 * 1024 * 1024;
+    const int n = 3 * 1024;
+    //const int n = 10;
     for (int i = 0; i < n; ++i) {
         LOG_INFO << "Hello, " << i << " abc...xyz";
     }

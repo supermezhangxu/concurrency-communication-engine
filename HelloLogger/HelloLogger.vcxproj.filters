@@ -33,7 +33,7 @@
     <ClCompile Include="CELLAsyncLogging.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="CELLTimeStamp.cpp">
+    <ClCompile Include="CELLTimeStampForLogger.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CELLCurrentThread.cpp">
@@ -62,7 +62,7 @@
     <ClInclude Include="CELLNonCopyable.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="CELLTimeStamp.h">
+    <ClInclude Include="CELLTimeStampForLogger.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="CELLThread.h">

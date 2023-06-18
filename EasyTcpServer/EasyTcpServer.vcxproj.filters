@@ -18,6 +18,27 @@
     <ClCompile Include="server.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\HelloLogger\CELLAsyncLogging.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\HelloLogger\CELLCurrentThread.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\HelloLogger\CELLFileUtil.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\HelloLogger\CELLLogFile.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\HelloLogger\CELLLogStream.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\HelloLogger\CELLLogging.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\HelloLogger\CELLTimeStampForLogger.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

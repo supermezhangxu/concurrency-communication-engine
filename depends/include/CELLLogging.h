@@ -43,7 +43,7 @@ public:
         DEBUG,
         INFO,
         WARN,
-        ERROR,
+        //ERROR,
         FATAL,
         LEVEL_COUNT,
     };
