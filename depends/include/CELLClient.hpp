@@ -4,6 +4,7 @@
 #include"CELL.hpp"
 #include"CELLBuffer.hpp"
 #include"CELLNetWork.hpp"
+#include"CELLLogging.h"
 
 //客户端心跳检测死亡计时时间
 #define CLIENT_HREAT_DEAD_TIME 60000
@@ -39,7 +40,7 @@ public:
 
 	~CELLClient()
 	{
-		CELLLog_Info("~CELLClient[sId=%d id=%d socket=%d]", serverId, id, (int)_sockfd);
+		LOG_INFO << "~CELLClient[sId=" << serverId << " id=" << id << " socket=" << (int)_sockfd << "]";
 		destory();
 	}
 
@@ -47,7 +48,7 @@ public:
 	{
 		if (INVALID_SOCKET != _sockfd)
 		{
-			CELLLog_Info("CELLClient::destory[sId=%d id=%d socket=%d]", serverId, id, (int)_sockfd);
+			LOG_INFO << "CELLClient::destory[sId=" << serverId << " id=" << id << " socket=" << (int)_sockfd << "]";
 			CELLNetWork::destorySocket(_sockfd);
 			_sockfd = INVALID_SOCKET;
 		}
@@ -123,7 +124,7 @@ public:
 		_dtHeart += dt;
 		if (_dtHeart >= CLIENT_HREAT_DEAD_TIME)
 		{
-			CELLLog_Info("checkHeart dead:s=%d,time=%ld",_sockfd, _dtHeart);
+			LOG_INFO << "checkHeart dead:s=" << _sockfd << ", time=" << _dtHeart;
 			return true;
 		}
 		return false;
@@ -154,8 +155,8 @@ public:
 	}
 	void recv4iocp(int nRecv)
 	{
-		if(!_isPostRecv)
-			CELLLog_Error("recv4iocp _isPostRecv is false");
+		if(!_isPostRecv)			
+			LOG_ERROR << "recv4iocp _isPostRecv is false";
 		_isPostRecv = false;
 		_recvBuff.read4iocp(nRecv);
 	}
@@ -171,7 +172,7 @@ public:
 	void send2iocp(int nSend)
 	{
 		if (!_isPostSend)
-			CELLLog_Error("send2iocp _isPostSend is false");
+			LOG_ERROR << "send2iocp _isPostSend is false";
 		_isPostSend = false;
 		_sendBuff.write2iocp(nSend);
 	}

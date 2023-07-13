@@ -165,7 +165,7 @@ inline AsyncLogging* getAsyncLog()
 	return g_asyncLog;
 }
 
-static const off_t kRollSize = 1 * 1024 * 1024;
+static const off_t kRollSize = 1 * 1024 * 1024;//1M
 
 void asyncLog(const char* msg, int len)
 {
@@ -179,13 +179,15 @@ void asyncLog(const char* msg, int len)
 int main(int argc, char* args[])
 {
 	//设置运行日志名称
-	CELLLog::Instance().setLogPath("serverLog", "w", false);
+	//CELLLog::Instance().setLogPath("serverLog", "w", false);
 	CELLConfig::Instance().Init(argc, args);
 
 	AsyncLogging log("helloAsync", kRollSize);
 	g_asyncLog = &log;
 	Logger::setOutput(asyncLog); // 为Logger设置输出回调, 重新配接输出位置
 	log.start();
+
+	LOG_ERROR << "hello error";
 
 	LOG_INFO << "my server start up...";
 
@@ -195,7 +197,8 @@ int main(int argc, char* args[])
 
 	if (CELLConfig::Instance().hasKey("-p"))
 	{
-		CELLLog_Info("hasKey -p");
+		//CELLLog_Info("hasKey -p");
+		LOG_INFO << "hasKey -p";
 	}
 
 	if (strcmp(strIP, "any") == 0)
@@ -220,10 +223,12 @@ int main(int argc, char* args[])
 			break;
 		}
 		else {
-			CELLLog_Info("undefine cmd");
+			//CELLLog_Info("undefine cmd");
+			LOG_INFO << "undefine cmd";
 		}
 	}
 
-	CELLLog_Info("exit.");
+	//CELLLog_Info("exit.");
+	LOG_INFO << "exit.";
 	return 0;
 }

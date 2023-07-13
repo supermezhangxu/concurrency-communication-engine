@@ -1,4 +1,5 @@
 #include "CELLLogFile.h"
+#include <iostream>
 
 LogFile::LogFile(const std::string& basename,
     off_t rollSize,

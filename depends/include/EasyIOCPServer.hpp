@@ -43,8 +43,8 @@ protected:
 			//---
 			int ret = iocp.wait(ioEvent, 1);
 			if (ret < 0)
-			{
-				CELLLog_Error("EasyIOCPServer.OnRun ep.wait exit.");
+			{				
+				LOG_ERROR << "EasyIOCPServer.OnRun ep.wait exit.";
 				pThread->Exit();
 				break;
 			}
@@ -87,7 +87,7 @@ protected:
 			else {
 				//获取IP地址 inet_ntoa(clientAddr.sin_addr)
 				CELLNetWork::destorySocket(cSock);
-				CELLLog_Warring("Accept to nMaxClient");
+				LOG_WARN << "Accept to nMaxClient";
 			}
 		}
 		return cSock;

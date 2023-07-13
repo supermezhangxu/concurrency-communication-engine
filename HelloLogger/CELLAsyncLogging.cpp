@@ -51,32 +51,35 @@ void AsyncLogging::append(const char* logline, int len)
 
 void AsyncLogging::threadFunc()
 {
-    // output有写入磁盘的接口
-    LogFile output(basename_, rollSize_, false);
-    // 后端缓冲区，用于归还前端得缓冲区，currentBuffer nextBuffer
+    assert(running_ == true);
+    //latch_.countDown();
+    LogFile output(basename_, rollSize_, false); // only called by this thread, so no need to use thread safe
     BufferPtr newBuffer1(new Buffer);
     BufferPtr newBuffer2(new Buffer);
     newBuffer1->bzero();
     newBuffer2->bzero();
-    // 缓冲区数组置为16个，用于和前端缓冲区数组进行交换
     BufferVector buffersToWrite;
-    buffersToWrite.reserve(16);
+    static const int kBuffersToWriteMaxSize = 25;
+
+    buffersToWrite.reserve(16); // FIXME: why 16?
     while (running_)
     {
-        {
-            // 互斥锁保护，这样别的线程在这段时间就无法向前端Buffer数组写入数据
-            std::unique_lock<std::mutex> lock(mutex_);
-            if (buffers_.empty())
-            {
-                // 等待三秒也会接触阻塞
-                cond_.wait_for(lock, std::chrono::seconds(3));
-            }
+        // ensure empty buffer
+        assert(newBuffer1 && newBuffer1->length() == 0);
+        assert(newBuffer2 && newBuffer2->length() == 0);
+        // ensure buffersToWrite is empty
+        assert(buffersToWrite.empty());
 
-            // 此时正使用得buffer也放入buffer数组中（没写完也放进去，避免等待太久才刷新一次）
+        { // push buffer to vector buffersToWrite
+            std::unique_lock<std::mutex> guard(mutex_);
+            if (buffers_.empty())
+            { // unusual usage!
+                cond_.wait_for(guard, std::chrono::seconds(3)); // wait condition or timeout
+            }
+            // not empty or timeout
+
             buffers_.push_back(std::move(currentBuffer_));
-            // 归还正使用缓冲区
             currentBuffer_ = std::move(newBuffer1);
-            // 后端缓冲区和前端缓冲区交换
             buffersToWrite.swap(buffers_);
             if (!nextBuffer_)
             {
@@ -84,36 +87,53 @@ void AsyncLogging::threadFunc()
             }
         }
 
-        // 遍历所有 buffer，将其写入文件
+        // ensure buffersToWrite is not empty
+        assert(!buffersToWrite.empty());
+
+        if (buffersToWrite.size() > kBuffersToWriteMaxSize) // FIXME: why 25? 25x4MB = 100MB, 也就是说, 从上次loop到本次loop已经堆积超过100MB, 就丢弃多余缓冲
+        {
+            char buf[256];
+            snprintf(buf, sizeof(buf), "Dropped log message at %s, %zd larger buffers\n",
+                Timestamp::now().toFormattedString().c_str(),
+                buffersToWrite.size() - 2);
+            fputs(buf, stderr);
+            output.append(buf, static_cast<int>(strlen(buf)));
+            buffersToWrite.erase(buffersToWrite.begin() + 2, buffersToWrite.end()); // keep 2 buffer
+        }
+
+        // append buffer content to logfile
         for (const auto& buffer : buffersToWrite)
         {
+            // FIXME: use unbuffered stdio FILE? or use ::writev ?
             output.append(buffer->data(), buffer->length());
         }
 
-        // 只保留两个缓冲区
         if (buffersToWrite.size() > 2)
         {
+            // drop non-bzero-ed buffers, avoid trashing
             buffersToWrite.resize(2);
         }
 
-        // 归还newBuffer1缓冲区
+        // move vector buffersToWrite's last buffer to newBuffer1
         if (!newBuffer1)
         {
+            assert(!buffersToWrite.empty());
             newBuffer1 = std::move(buffersToWrite.back());
             buffersToWrite.pop_back();
-            newBuffer1->reset();
+            newBuffer1->reset(); // reset buffer
         }
 
-        // 归还newBuffer2缓冲区
+        // move vector buffersToWrite's last buffer to newBuffer2
         if (!newBuffer2)
         {
+            assert(!buffersToWrite.empty());
             newBuffer2 = std::move(buffersToWrite.back());
             buffersToWrite.pop_back();
-            newBuffer2->reset();
+            newBuffer2->reset(); // reset buffer
         }
 
-        buffersToWrite.clear(); // 清空后端缓冲区队列
-        output.flush(); //清空文件缓冲区
+        buffersToWrite.clear();
+        output.flush();
     }
     output.flush();
 }

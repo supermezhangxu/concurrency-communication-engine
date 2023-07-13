@@ -31,9 +31,10 @@ void test_Logging()
 
 void test_AsyncLogging()
 {
-    const int n = 3 * 1024;
+    const int n = 10;
     //const int n = 10;
     for (int i = 0; i < n; ++i) {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         LOG_INFO << "Hello, " << i << " abc...xyz";
     }
 }
@@ -52,7 +53,7 @@ int main(int argc, char* argv[])
     //printf("pid = %d\n", getpid());
 
     AsyncLogging log("helloAsync", kRollSize);
-    test_Logging();
+    //test_Logging();
 
     //
     std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -61,7 +62,7 @@ int main(int argc, char* argv[])
     Logger::setOutput(asyncLog); // 为Logger设置输出回调, 重新配接输出位置
     log.start();
 
-    test_Logging();
+    //test_Logging();
     test_AsyncLogging();
 
     std::this_thread::sleep_for(std::chrono::seconds(10));

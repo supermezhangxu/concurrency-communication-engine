@@ -86,7 +86,7 @@ public:
 		int ret = _iocp.wait(_ioEvent, 1);
 		if (ret < 0)
 		{
-			CELLLog_Error("CELLIOCPServer%d.OnRun.wait", _id);
+			LOG_ERROR << "CELLIOCPServer%d.OnRun.wait";
 			return ret;
 		}
 		else if (ret == 0)
@@ -100,7 +100,8 @@ public:
 		{
 			if (_ioEvent.bytesTrans <= 0)
 			{//客户端断开处理
-				CELLLog_Info("rmClient sockfd=%d, IO_TYPE::RECV bytesTrans=%d", _ioEvent.pIoData->sockfd, _ioEvent.bytesTrans);
+				//CELLLog_Info("rmClient sockfd=%d, IO_TYPE::RECV bytesTrans=%d", _ioEvent.pIoData->sockfd, _ioEvent.bytesTrans);
+				LOG_INFO << "rmClient sockfd=" << _ioEvent.pIoData->sockfd << ", IO_TYPE::RECV bytesTrans=" << _ioEvent.bytesTrans;
 				rmClient(_ioEvent);
 				return ret;
 			}
@@ -119,7 +120,8 @@ public:
 		{
 			if (_ioEvent.bytesTrans <= 0)
 			{//客户端断开处理
-				CELLLog_Info("rmClient sockfd=%d, IO_TYPE::SEND bytesTrans=%d", _ioEvent.pIoData->sockfd, _ioEvent.bytesTrans);
+				//CELLLog_Info("rmClient sockfd=%d, IO_TYPE::SEND bytesTrans=%d", _ioEvent.pIoData->sockfd, _ioEvent.bytesTrans);
+				LOG_INFO << "rmClient sockfd=" << _ioEvent.pIoData->sockfd << ", IO_TYPE::SEND bytesTrans=" << _ioEvent.bytesTrans;
 				rmClient(_ioEvent);
 				return ret;
 			}
@@ -131,7 +133,7 @@ public:
 			//CELLLog_Info("IO_TYPE::SEND sockfd=%d, bytesTrans=%d", _ioEvent.pIoData->sockfd, _ioEvent.bytesTrans);
 		}
 		else {
-			CELLLog_Warring("undefine io type.");
+			LOG_WARN << "undefine io type.";
 		}
 		return ret;
 	}

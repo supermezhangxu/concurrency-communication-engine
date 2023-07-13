@@ -8,6 +8,7 @@
 #include"CELLNetWork.hpp"
 #include"CELLConfig.hpp"
 #include"CELLFDSet.hpp"
+#include "CELLLogging.h"
 
 #include<thread>
 #include<mutex>
@@ -247,7 +248,10 @@ protected:
 		auto t1 = _tTime.getElapsedSecond();
 		if (t1 >= 1.0)
 		{
-			CELLLog_Info("thread<%d>,time<%lf>,socket<%d>,clients<%d>,recv<%d>,msg<%d>", (int)_cellServers.size(), t1, _sock, (int)_clientCount, (int)_recvCount, (int)_msgCount);
+			//CELLLog_Info("thread<%d>,time<%lf>,socket<%d>,clients<%d>,recv<%d>,msg<%d>", (int)_cellServers.size(), t1, _sock, (int)_clientCount, (int)_recvCount, (int)_msgCount);
+			
+			LOG_INFO << "thread<" << (int)_cellServers.size() << ">, " << "time<" << t1 << ">, " << "socket<" << _sock << ">, " << "clients<" << (int)_clientCount << ">, "
+				<< "recv<" << (int)_recvCount << ">, " << "msg<" << (int)_msgCount << ">";
 			_recvCount = 0;
 			_msgCount = 0;
 			_tTime.update();

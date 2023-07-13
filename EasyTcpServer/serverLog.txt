@@ -1,43 +1,16 @@
-Info [2023-6-17 20:35:1]CELLLog::setLogPath success,<serverLog.txt,w>
-Error [2023-6-17 20:35:1]CELLConfig::getStr not find <strIP>
-Info [2023-6-17 20:35:1]CELLConfig::getStr strIP=any
-Error [2023-6-17 20:35:1]CELLConfig::getStr not find <nPort>
-Info [2023-6-17 20:35:1]CELLConfig::getInt nPort=9527
-Error [2023-6-17 20:35:1]CELLConfig::getStr not find <nThread>
-Info [2023-6-17 20:35:1]CELLConfig::getInt nThread=1
-Error [2023-6-17 20:35:1]CELLConfig::getStr not find <nSendBuffSize>
-Info [2023-6-17 20:35:1]CELLConfig::getInt nSendBuffSize=10240
-Error [2023-6-17 20:35:1]CELLConfig::getStr not find <nRecvBuffSize>
-Info [2023-6-17 20:35:1]CELLConfig::getInt nRecvBuffSize=8192
-Error [2023-6-17 20:35:1]CELLConfig::getStr not find <nMaxClient>
-Info [2023-6-17 20:35:1]CELLConfig::getInt nMaxClient=65535
-Info [2023-6-17 20:35:1]create socket<236> success...
-Info [2023-6-17 20:35:1]bind port<9527> success...
-Info [2023-6-17 20:35:1]listen port<236> success...
-Info [2023-6-17 20:35:2]thread<1>,time<1.000158>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:3]thread<1>,time<1.009055>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:4]thread<1>,time<1.003791>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:5]thread<1>,time<1.009869>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:6]thread<1>,time<1.008553>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:7]thread<1>,time<1.008801>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:8]thread<1>,time<1.006968>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:9]thread<1>,time<1.000249>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:10]thread<1>,time<1.009718>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:11]thread<1>,time<1.007679>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:12]thread<1>,time<1.012228>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:13]thread<1>,time<1.004348>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:14]thread<1>,time<1.007412>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:15]thread<1>,time<1.001050>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:16]thread<1>,time<1.008148>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:17]thread<1>,time<1.010690>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:18]thread<1>,time<1.013270>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:19]thread<1>,time<1.007720>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:20]thread<1>,time<1.009047>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:21]thread<1>,time<1.000026>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:22]thread<1>,time<1.000206>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:23]thread<1>,time<1.010418>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:24]thread<1>,time<1.013295>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:25]thread<1>,time<1.005595>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:26]thread<1>,time<1.007676>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:27]thread<1>,time<1.009446>,socket<236>,clients<0>,recv<0>,msg<0>
-Info [2023-6-17 20:35:28]thread<1>,time<1.006203>,socket<236>,clients<0>,recv<0>,msg<0>
+Info [2023-6-25 21:21:15]CELLLog::setLogPath success,<serverLog.txt,w>
+Error [2023-6-25 21:21:15]CELLConfig::getStr not find <strIP>
+Info [2023-6-25 21:21:15]CELLConfig::getStr strIP=any
+Error [2023-6-25 21:21:15]CELLConfig::getStr not find <nPort>
+Info [2023-6-25 21:21:15]CELLConfig::getInt nPort=9527
+Error [2023-6-25 21:21:15]CELLConfig::getStr not find <nThread>
+Info [2023-6-25 21:21:15]CELLConfig::getInt nThread=1
+Error [2023-6-25 21:21:15]CELLConfig::getStr not find <nSendBuffSize>
+Info [2023-6-25 21:21:15]CELLConfig::getInt nSendBuffSize=10240
+Error [2023-6-25 21:21:15]CELLConfig::getStr not find <nRecvBuffSize>
+Info [2023-6-25 21:21:15]CELLConfig::getInt nRecvBuffSize=8192
+Error [2023-6-25 21:21:15]CELLConfig::getStr not find <nMaxClient>
+Info [2023-6-25 21:21:15]CELLConfig::getInt nMaxClient=65535
+Info [2023-6-25 21:21:15]create socket<264> success...
+Info [2023-6-25 21:21:15]bind port<9527> success...
+Info [2023-6-25 21:21:15]listen port<264> success...

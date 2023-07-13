@@ -43,7 +43,7 @@ public:
         DEBUG,
         INFO,
         WARN,
-        //ERROR,
+        _ERROR,
         FATAL,
         LEVEL_COUNT,
     };
@@ -107,7 +107,7 @@ const char* getErrnoMsg(int savedErrno);
 #define LOG_INFO if (logLevel() <= Logger::INFO) \
   Logger(__FILE__, __LINE__).stream()
 #define LOG_WARN Logger(__FILE__, __LINE__, Logger::WARN).stream()
-#define LOG_ERROR Logger(__FILE__, __LINE__, Logger::ERROR).stream()
+#define LOG_ERROR Logger(__FILE__, __LINE__, Logger::_ERROR).stream()
 #define LOG_FATAL Logger(__FILE__, __LINE__, Logger::FATAL).stream()
 
 #endif // LOGGING_H

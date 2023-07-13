@@ -8,8 +8,8 @@
 
 //#include <strings.h>
 
-const int kSmallBuffer = 4000;
-const int kLargeBuffer = 4000 * 1000;
+const int kSmallBuffer = 2000;
+const int kLargeBuffer = 2000 * 1000;
 
 template <int SIZE>
 class FixedBuffer : noncopyable
@@ -30,7 +30,9 @@ public:
     }
 
     const char* data() const { return data_; }
-    int length() const { return static_cast<int>(end() - data_); }
+    //这里有一个大问题，会写入大量空行
+    //int length() const { return static_cast<int>(end() - data_); }
+    int length() const { return static_cast<int>(cur_ - data_); }
 
     char* current() { return cur_; }
     int avail() const { return static_cast<int>(end() - cur_); }
