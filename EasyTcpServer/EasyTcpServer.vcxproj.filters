@@ -18,25 +18,25 @@
     <ClCompile Include="server.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\HelloLogger\CELLAsyncLogging.cpp">
+    <ClCompile Include="..\depends\include\CELLAsyncLogging.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\HelloLogger\CELLCurrentThread.cpp">
+    <ClCompile Include="..\depends\include\CELLCurrentThread.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\HelloLogger\CELLFileUtil.cpp">
+    <ClCompile Include="..\depends\include\CELLFileUtil.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\HelloLogger\CELLLogFile.cpp">
+    <ClCompile Include="..\depends\include\CELLLogFile.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\HelloLogger\CELLLogStream.cpp">
+    <ClCompile Include="..\depends\include\CELLLogging.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\HelloLogger\CELLLogging.cpp">
+    <ClCompile Include="..\depends\include\CELLLogStream.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\HelloLogger\CELLTimeStampForLogger.cpp">
+    <ClCompile Include="..\depends\include\CELLTimeStampForLogger.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
